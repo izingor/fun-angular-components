@@ -1,1 +1,54 @@
-<router-outlet></router-outlet>
+<div class="container">
+  <div class="demo-section">
+    <h2>Popover Component Demo</h2>
+    
+    <div class="button-container">
+      <button 
+        #triggerButton
+        class="trigger-button"
+        (click)="popover.toggle()">
+        Click to toggle popover
+      </button>
+      
+      <app-popover 
+        #popover
+        [trigger]="triggerButton"
+        width="240px">
+        <div class="popover-content-demo">
+          <p class="popover-text">This is a popover with the same width as the trigger button</p>
+          <div class="popover-actions">
+            <button class="action-button" (click)="popover.close()">Got it</button>
+          </div>
+        </div>
+      </app-popover>
+    </div>
+
+    <div class="button-container" style="margin-top: 60px;">
+      <button 
+        #triggerButton2
+        class="trigger-button secondary"
+        (click)="popover2.toggle()">
+        Another Example
+      </button>
+      
+      <app-popover 
+        #popover2
+        [trigger]="triggerButton2"
+        maxWidth="350px">
+        <div class="popover-content-demo">
+          <h3 style="margin: 0 0 12px 0; font-size: 16px; font-weight: 500;">Custom Content</h3>
+          <p class="popover-text">You can put any content here - text, buttons, forms, etc.</p>
+          <ul style="margin: 12px 0; padding-left: 20px;">
+            <li>Feature 1</li>
+            <li>Feature 2</li>
+            <li>Feature 3</li>
+          </ul>
+          <div class="popover-actions">
+            <button class="action-button primary" (click)="onButtonClick(); popover2.close()">Action</button>
+            <button class="action-button" (click)="popover2.close()">Cancel</button>
+          </div>
+        </div>
+      </app-popover>
+    </div>
+  </div>
+</div>

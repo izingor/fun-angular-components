@@ -1,0 +1,57 @@
+::ng-deep .popover-panel {
+  .popover-content {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    padding: 16px;
+    font-family: 'Roboto', sans-serif;
+    color: rgba(0, 0, 0, 0.87);
+    animation: popoverFadeIn 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
+    transform-origin: top left;
+    overflow: hidden;
+    min-width: 200px;
+    
+    &:before {
+      content: '';
+      position: absolute;
+      top: -8px;
+      left: 16px;
+      width: 0;
+      height: 0;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-bottom: 8px solid white;
+      filter: drop-shadow(0 -2px 4px rgba(0, 0, 0, 0.1));
+    }
+  }
+}
+
+@keyframes popoverFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+// Animation for closing
+::ng-deep .cdk-overlay-pane.popover-panel.ng-animating {
+  .popover-content {
+    animation: popoverFadeOut 0.15s cubic-bezier(0.4, 0.0, 1, 1);
+  }
+}
+
+@keyframes popoverFadeOut {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95) translateY(-4px);
+  }
+}
