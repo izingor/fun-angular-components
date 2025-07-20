@@ -61,7 +61,6 @@ export class PopoverComponent implements OnDestroy {
   }
 
   private createOverlay() {
-    // Handle both ElementRef and HTMLElement
     const element = this.trigger instanceof ElementRef ? this.trigger : new ElementRef(this.trigger);
     
     const positionStrategy = this.overlayPositionBuilder
@@ -94,7 +93,6 @@ export class PopoverComponent implements OnDestroy {
       scrollStrategy: this.overlay.scrollStrategies.reposition()
     });
 
-    // Close when clicking outside
     this.overlayRef.backdropClick().subscribe(() => {
       this.close();
     });
