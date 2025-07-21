@@ -1,6 +1,6 @@
 ::ng-deep .popover-panel {
   .popover-content {
-    --pointer-offset: 50%; // Default to center
+    --pointer-offset: 50%; 
     background: white;
     border-radius: 12px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
@@ -9,44 +9,40 @@
     font-family: 'Roboto', sans-serif;
     color: rgba(0, 0, 0, 0.87);
     animation: popoverFadeIn 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
-    overflow: hidden;
+    overflow: visible; // Changed from hidden to visible
     min-width: 200px;
     position: relative;
-    
-    // Pointer styles - immediately visible
-    &:before,
-    &:after {
-      content: '';
-      position: absolute;
-      z-index: 20;
-    }
     
     // Bottom placement (pointer points up from bottom of popover)
     &[data-placement="bottom"] {
       transform-origin: top center;
       
-      &:before {
+      &::before {
+        content: '';
+        position: absolute;
         top: -8px;
-        left: var(--pointer-offset);
+        left: 50%; // Start with center, we'll make it dynamic later
         transform: translateX(-50%);
         width: 0;
         height: 0;
         border-left: 8px solid transparent;
         border-right: 8px solid transparent;
         border-bottom: 8px solid white;
-        filter: drop-shadow(0 -2px 4px rgba(0, 0, 0, 0.1));
+        z-index: 10;
       }
       
-      &:after {
+      &::after {
+        content: '';
+        position: absolute;
         top: -9px;
-        left: var(--pointer-offset);
+        left: 50%;
         transform: translateX(-50%);
         width: 0;
         height: 0;
         border-left: 9px solid transparent;
         border-right: 9px solid transparent;
         border-bottom: 9px solid rgba(0, 0, 0, 0.08);
-        z-index: 1;
+        z-index: 9;
       }
     }
     
@@ -54,28 +50,32 @@
     &[data-placement="top"] {
       transform-origin: bottom center;
       
-      &:before {
+      &::before {
+        content: '';
+        position: absolute;
         bottom: -8px;
-        left: var(--pointer-offset);
+        left: 50%;
         transform: translateX(-50%);
         width: 0;
         height: 0;
         border-left: 8px solid transparent;
         border-right: 8px solid transparent;
         border-top: 8px solid white;
-        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+        z-index: 10;
       }
       
-      &:after {
+      &::after {
+        content: '';
+        position: absolute;
         bottom: -9px;
-        left: var(--pointer-offset);
+        left: 50%;
         transform: translateX(-50%);
         width: 0;
         height: 0;
         border-left: 9px solid transparent;
         border-right: 9px solid transparent;
         border-top: 9px solid rgba(0, 0, 0, 0.08);
-        z-index: 1;
+        z-index: 9;
       }
     }
     
@@ -83,28 +83,32 @@
     &[data-placement="right"] {
       transform-origin: center left;
       
-      &:before {
+      &::before {
+        content: '';
+        position: absolute;
         left: -8px;
-        top: var(--pointer-offset);
+        top: 50%;
         transform: translateY(-50%);
         width: 0;
         height: 0;
         border-top: 8px solid transparent;
         border-bottom: 8px solid transparent;
         border-right: 8px solid white;
-        filter: drop-shadow(-2px 0 4px rgba(0, 0, 0, 0.1));
+        z-index: 10;
       }
       
-      &:after {
+      &::after {
+        content: '';
+        position: absolute;
         left: -9px;
-        top: var(--pointer-offset);
+        top: 50%;
         transform: translateY(-50%);
         width: 0;
         height: 0;
         border-top: 9px solid transparent;
         border-bottom: 9px solid transparent;
         border-right: 9px solid rgba(0, 0, 0, 0.08);
-        z-index: 1;
+        z-index: 9;
       }
     }
     
@@ -112,28 +116,32 @@
     &[data-placement="left"] {
       transform-origin: center right;
       
-      &:before {
+      &::before {
+        content: '';
+        position: absolute;
         right: -8px;
-        top: var(--pointer-offset);
+        top: 50%;
         transform: translateY(-50%);
         width: 0;
         height: 0;
         border-top: 8px solid transparent;
         border-bottom: 8px solid transparent;
         border-left: 8px solid white;
-        filter: drop-shadow(2px 0 4px rgba(0, 0, 0, 0.1));
+        z-index: 10;
       }
       
-      &:after {
+      &::after {
+        content: '';
+        position: absolute;
         right: -9px;
-        top: var(--pointer-offset);
+        top: 50%;
         transform: translateY(-50%);
         width: 0;
         height: 0;
         border-top: 9px solid transparent;
         border-bottom: 9px solid transparent;
         border-left: 9px solid rgba(0, 0, 0, 0.08);
-        z-index: 1;
+        z-index: 9;
       }
     }
   }
