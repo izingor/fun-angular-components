@@ -1,5 +1,9 @@
 <ng-template #popoverTemplate>
-  <div class="popover-content" [style.width]="width" [style.max-width]="maxWidth">
+  <div class="popover-content" 
+       [style.width]="width" 
+       [style.max-width]="maxWidth"
+       [attr.data-placement]="actualPlacement"
+       [style.--pointer-offset.px]="pointerOffset">
     <ng-content></ng-content>
   </div>
 </ng-template>

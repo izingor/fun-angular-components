@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { PopoverComponent } from '../popover/popover.component';
+import { PopoverComponent, PopoverPlacement } from '../popover/popover.component';
 
 @Component({
   selector: 'app-root',
@@ -11,7 +11,14 @@ import { PopoverComponent } from '../popover/popover.component';
 export class AppComponent {
   title = 'fun';
 
+  placements: PopoverPlacement[] = ['bottom', 'top', 'left', 'right'];
+  currentPlacement: PopoverPlacement = 'bottom';
+
   onButtonClick() {
     console.log('Button clicked');
+  }
+
+  changePlacement(placement: PopoverPlacement) {
+    this.currentPlacement = placement;
   }
 }

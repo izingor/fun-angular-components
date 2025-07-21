@@ -6,24 +6,105 @@
 }
 
 .demo-section {
-  max-width: 800px;
+  max-width: 1000px;
   margin: 0 auto;
   background: white;
   padding: 32px;
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   
+  h1 {
+    margin: 0 0 12px 0;
+    color: #333;
+    font-weight: 600;
+    font-size: 32px;
+  }
+  
   h2 {
-    margin: 0 0 32px 0;
+    margin: 48px 0 24px 0;
     color: #333;
     font-weight: 500;
     font-size: 24px;
+    
+    &:first-of-type {
+      margin-top: 32px;
+    }
+  }
+  
+  h3 {
+    margin: 0 0 12px 0;
+    color: #333;
+    font-weight: 500;
+    font-size: 16px;
+  }
+  
+  p {
+    margin: 0 0 16px 0;
+    color: #666;
+    line-height: 1.6;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
   }
 }
 
-.button-container {
-  position: relative;
-  display: inline-block;
+// Placement Demo
+.placement-demo {
+  .placement-controls {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+  }
+  
+  .placement-button {
+    background: #e0e0e0;
+    color: #333;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    
+    &:hover {
+      background: #d0d0d0;
+    }
+    
+    &.active {
+      background: #6200ea;
+      color: white;
+    }
+  }
+  
+  .center-demo {
+    display: flex;
+    justify-content: center;
+    padding: 80px 0;
+  }
+}
+
+// Edge Cases Demo
+.edge-cases {
+  .edge-buttons {
+    position: relative;
+    height: 300px;
+    border: 2px dashed #ddd;
+    border-radius: 12px;
+    margin: 24px 0;
+  }
+}
+
+// Side Demo
+.side-demo {
+  .side-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 60px;
+    padding: 40px 0;
+  }
 }
 
 .trigger-button {
@@ -38,7 +119,6 @@
   font-family: inherit;
   transition: all 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
   box-shadow: 0 2px 8px rgba(98, 0, 234, 0.3);
-  width: 240px;
   
   &:hover {
     background: #7c4dff;
@@ -51,10 +131,38 @@
     box-shadow: 0 2px 8px rgba(98, 0, 234, 0.3);
   }
   
-  &.secondary {
+  &.center {
+    min-width: 180px;
+  }
+  
+  &.edge {
+    position: absolute;
+    min-width: 120px;
+    
+    &.top-left {
+      top: 20px;
+      left: 20px;
+    }
+    
+    &.top-right {
+      top: 20px;
+      right: 20px;
+    }
+    
+    &.bottom-left {
+      bottom: 20px;
+      left: 20px;
+    }
+    
+    &.bottom-right {
+      bottom: 20px;
+      right: 20px;
+    }
+  }
+  
+  &.side {
     background: #00bcd4;
     box-shadow: 0 2px 8px rgba(0, 188, 212, 0.3);
-    width: auto;
     
     &:hover {
       background: #26c6da;
@@ -64,18 +172,15 @@
 }
 
 .popover-content-demo {
-  .popover-text {
-    margin: 0 0 16px 0;
+  p {
+    margin: 0 0 12px 0;
     line-height: 1.5;
     color: rgba(0, 0, 0, 0.87);
     font-size: 14px;
-  }
-  
-  .popover-actions {
-    display: flex;
-    gap: 8px;
-    justify-content: flex-end;
-    margin-top: 16px;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
   }
   
   .action-button {
@@ -89,6 +194,7 @@
     transition: all 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
     background: #f5f5f5;
     color: #333;
+    margin-top: 12px;
     
     &:hover {
       background: #e0e0e0;

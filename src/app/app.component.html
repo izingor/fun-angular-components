@@ -1,54 +1,158 @@
 <div class="container">
   <div class="demo-section">
-    <h2>Popover Component Demo</h2>
+    <h1>Enhanced Popover Component Demo</h1>
+    <p>The popover now supports all four placements with smart pointer positioning</p>
     
-    <div class="button-container">
-      <button 
-        #triggerButton
-        class="trigger-button"
-        (click)="popover.toggle()">
-        Click to toggle popover
-      </button>
+    <!-- Placement Demo -->
+    <div class="placement-demo">
+      <h2>Placement Options</h2>
+      <div class="placement-controls">
+        <button 
+          *ngFor="let placement of placements"
+          class="placement-button"
+          [class.active]="currentPlacement === placement"
+          (click)="changePlacement(placement)">
+          {{ placement | titlecase }}
+        </button>
+      </div>
       
-      <app-popover 
-        #popover
-        [trigger]="triggerButton"
-        width="240px">
-        <div class="popover-content-demo">
-          <p class="popover-text">This is a popover with the same width as the trigger button</p>
-          <div class="popover-actions">
-            <button class="action-button" (click)="popover.close()">Got it</button>
+      <div class="center-demo">
+        <button 
+          #centerTrigger
+          class="trigger-button center"
+          (click)="centerPopover.toggle()">
+          {{ currentPlacement | titlecase }} Popover
+        </button>
+        
+        <app-popover 
+          #centerPopover
+          [trigger]="centerTrigger"
+          [placement]="currentPlacement"
+          width="280px">
+          <div class="popover-content-demo">
+            <h3>{{ currentPlacement | titlecase }} Placement</h3>
+            <p>The pointer adapts to the placement and always points to the center of the trigger button.</p>
+            <p>Notice how the pointer position adjusts based on available space!</p>
+            <button class="action-button" (click)="centerPopover.close()">Close</button>
           </div>
-        </div>
-      </app-popover>
+        </app-popover>
+      </div>
     </div>
 
-    <div class="button-container" style="margin-top: 60px;">
-      <button 
-        #triggerButton2
-        class="trigger-button secondary"
-        (click)="popover2.toggle()">
-        Another Example
-      </button>
+    <!-- Edge Cases Demo -->
+    <div class="edge-cases">
+      <h2>Edge Cases & Smart Positioning</h2>
+      <p>Try these buttons near the edges to see how the popover adapts:</p>
       
-      <app-popover 
-        #popover2
-        [trigger]="triggerButton2"
-        maxWidth="350px">
-        <div class="popover-content-demo">
-          <h3 style="margin: 0 0 12px 0; font-size: 16px; font-weight: 500;">Custom Content</h3>
-          <p class="popover-text">You can put any content here - text, buttons, forms, etc.</p>
-          <ul style="margin: 12px 0; padding-left: 20px;">
-            <li>Feature 1</li>
-            <li>Feature 2</li>
-            <li>Feature 3</li>
-          </ul>
-          <div class="popover-actions">
-            <button class="action-button primary" (click)="onButtonClick(); popover2.close()">Action</button>
-            <button class="action-button" (click)="popover2.close()">Cancel</button>
+      <div class="edge-buttons">
+        <!-- Top Left -->
+        <button 
+          #topLeftTrigger
+          class="trigger-button edge top-left"
+          (click)="topLeftPopover.toggle()">
+          Top Left
+        </button>
+        <app-popover 
+          #topLeftPopover
+          [trigger]="topLeftTrigger"
+          placement="bottom"
+          width="200px">
+          <div class="popover-content-demo">
+            <p>When near edges, the pointer adjusts its position to always point to the center of the trigger.</p>
           </div>
-        </div>
-      </app-popover>
+        </app-popover>
+
+        <!-- Top Right -->
+        <button 
+          #topRightTrigger
+          class="trigger-button edge top-right"
+          (click)="topRightPopover.toggle()">
+          Top Right
+        </button>
+        <app-popover 
+          #topRightPopover
+          [trigger]="topRightTrigger"
+          placement="bottom"
+          width="200px">
+          <div class="popover-content-demo">
+            <p>The popover intelligently repositions itself when there's limited space.</p>
+          </div>
+        </app-popover>
+
+        <!-- Bottom Left -->
+        <button 
+          #bottomLeftTrigger
+          class="trigger-button edge bottom-left"
+          (click)="bottomLeftPopover.toggle()">
+          Bottom Left
+        </button>
+        <app-popover 
+          #bottomLeftPopover
+          [trigger]="bottomLeftTrigger"
+          placement="top"
+          width="200px">
+          <div class="popover-content-demo">
+            <p>Fallback positioning ensures the popover is always visible and accessible.</p>
+          </div>
+        </app-popover>
+
+        <!-- Bottom Right -->
+        <button 
+          #bottomRightTrigger
+          class="trigger-button edge bottom-right"
+          (click)="bottomRightPopover.toggle()">
+          Bottom Right
+        </button>
+        <app-popover 
+          #bottomRightPopover
+          [trigger]="bottomRightTrigger"
+          placement="top"
+          width="200px">
+          <div class="popover-content-demo">
+            <p>The pointer always appears immediately - no more delays!</p>
+          </div>
+        </app-popover>
+      </div>
+    </div>
+
+    <!-- Side Placements Demo -->
+    <div class="side-demo">
+      <h2>Side Placements</h2>
+      <div class="side-buttons">
+        <button 
+          #leftTrigger
+          class="trigger-button side"
+          (click)="leftPopover.toggle()">
+          Left Popover
+        </button>
+        <app-popover 
+          #leftPopover
+          [trigger]="leftTrigger"
+          placement="left"
+          width="250px">
+          <div class="popover-content-demo">
+            <h3>Left Placement</h3>
+            <p>Perfect for right-aligned content or when horizontal space is preferred.</p>
+          </div>
+        </app-popover>
+
+        <button 
+          #rightTrigger
+          class="trigger-button side"
+          (click)="rightPopover.toggle()">
+          Right Popover
+        </button>
+        <app-popover 
+          #rightPopover
+          [trigger]="rightTrigger"
+          placement="right"
+          width="250px">
+          <div class="popover-content-demo">
+            <h3>Right Placement</h3>
+            <p>Great for left-aligned content or tooltips that need horizontal spacing.</p>
+          </div>
+        </app-popover>
+      </div>
     </div>
   </div>
 </div>
