@@ -205,10 +205,8 @@ describe('PopoverComponent', () => {
         component.open();
         tick();
         
-        // The actualPlacement might default to bottom in test environment
-        // but the data-placement attribute should reflect the input placement initially
         const popoverContent = overlayContainer.getContainerElement().querySelector('.popover-content');
-        expect(popoverContent).toBeTruthy();
+        expect(popoverContent?.getAttribute('data-placement')).toBe(placement);
       }));
     });
 
@@ -249,7 +247,6 @@ describe('PopoverComponent', () => {
     it('should include fallback positions', () => {
       const positions = (component as any).getPositions();
       
-      // Should have primary position + fallbacks
       expect(positions.length).toBeGreaterThan(1);
     });
   });
