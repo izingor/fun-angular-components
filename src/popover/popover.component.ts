@@ -55,7 +55,6 @@ export class PopoverComponent implements OnDestroy {
       this.isOpen = true;
       this.openChange.emit(true);
       
-      // Calculate pointer position after overlay is attached
       setTimeout(() => this.calculatePointerPosition(), 0);
     }
   }
@@ -90,7 +89,6 @@ export class PopoverComponent implements OnDestroy {
       this.close();
     });
 
-    // Listen to position changes to update pointer position
     positionStrategy.positionChanges.subscribe((position) => {
       this.updateActualPlacement(position);
     });
@@ -101,7 +99,6 @@ export class PopoverComponent implements OnDestroy {
     
     const positions: ConnectedPosition[] = [];
     
-    // Primary position based on placement input
     switch (this.placement) {
       case 'bottom':
         positions.push({
@@ -141,9 +138,7 @@ export class PopoverComponent implements OnDestroy {
         break;
     }
 
-    // Fallback positions
     const fallbacks: ConnectedPosition[] = [
-      // Bottom
       {
         originX: 'center',
         originY: 'bottom',
