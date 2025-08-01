@@ -1,0 +1,86 @@
+.filter-chips-container {
+  border-bottom: 1px solid #BDBDBD;
+  padding-bottom: 16px;
+}
+
+.filter-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  cursor: pointer;
+  user-select: none;
+}
+
+.filter-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+}
+
+.filter-header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filter-count {
+  background-color: hsl(220, 25%, 95%);
+  color: hsl(220, 15%, 40%);
+  border-radius: 12px;
+  padding: 4px 8px;
+  font-size: 12px;
+  font-weight: 500;
+  min-width: 20px;
+  text-align: center;
+}
+
+.filter-toggle-icon {
+  color: hsl(220, 15%, 40%);
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.filter-chips {
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
+  
+  &.expanded {
+    opacity: 1;
+    max-height: 500px;
+    padding-top: 8px;
+  }
+}
+
+mat-chip-set {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.filter-chip {
+  background-color: hsl(220, 25%, 95%) !important;
+  color: hsl(220, 15%, 40%) !important;
+  border-radius: 16px !important;
+  padding: 8px 12px !important;
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+.remove-icon {
+  color: hsl(220, 15%, 40%) !important;
+  font-size: 16px !important;
+  width: 16px !important;
+  height: 16px !important;
+  cursor: pointer !important;
+  
+  &:hover {
+    color: #666 !important;
+  }
+}

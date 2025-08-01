@@ -3,6 +3,30 @@
     <h1>Enhanced Popover Component Demo</h1>
     <p>The popover now supports all four placements with smart pointer positioning</p>
     
+    <h2>Filters</h2>
+    <app-filter-chips
+      [filters]="activeFilters"
+      (filterRemoved)="onFilterRemoved($event)">
+    </app-filter-chips>
+
+    <h2>Popover Demo</h2>
+    <p>Choose placement:</p>
+    <button 
+      *ngFor="let placement of placements" 
+      (click)="changePlacement(placement)"
+      [class.active]="placement === currentPlacement"
+      style="margin: 5px;">
+      {{ placement }}
+    </button>
+
+    <app-popover [placement]="currentPlacement">
+      <button trigger>Click me!</button>
+      <div content>
+        <p>This is the popover content!</p>
+        <button (click)="onButtonClick()">Action Button</button>
+      </div>
+    </app-popover>
+
     <!-- Placement Demo -->
     <div class="placement-demo">
       <h2>Placement Options</h2>
