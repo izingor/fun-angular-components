@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { PopoverComponent, PopoverPlacement } from '../popover/popover.component';
-import { FilterChipsComponent, FilterChip } from '../chips-bar';
+import { ChipsBarComponent } from '../chips-bar/chips-bar.component';
+import { FilterChip } from '../chips-bar/filter-chip.interface';
 
 @Component({
   selector: 'app-root',
-  imports: [PopoverComponent, CommonModule, FilterChipsComponent],
+  imports: [PopoverComponent, CommonModule, ChipsBarComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
