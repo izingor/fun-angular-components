@@ -1,4 +1,6 @@
 export interface FilterChip {
-  id: string | number;
+  id: string ;
   label: string;
+  disabled?: boolean;
+  
 } 

@@ -61,32 +61,3 @@
   }
 }
 
-mat-chip-set {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.chip {
-  background-color: hsl(220, 25%, 95%) !important;
-  color: hsl(220, 15%, 40%) !important;
-  border-radius: 16px !important;
-  padding: 8px 12px !important;
-  font-size: 14px !important;
-  font-weight: 400 !important;
-  display: flex !important;
-  align-items: center !important;
-  gap: 6px !important;
-}
-
-.chip-remove-icon {
-  color: hsl(220, 15%, 40%) !important;
-  font-size: 16px !important;
-  width: 16px !important;
-  height: 16px !important;
-  cursor: pointer !important;
-  
-  &:hover {
-    color: #666 !important;
-  }
-}

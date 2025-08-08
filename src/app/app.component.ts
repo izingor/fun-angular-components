@@ -33,7 +33,7 @@ export class AppComponent {
     this.currentPlacement = placement;
   }
 
-  onFilterRemoved(filterIdToRemove: string | number): void {
+  onFilterRemoved(filterIdToRemove: string): void {
     this.activeFilters = this.activeFilters.filter(
       (filter) => filter.id !== filterIdToRemove
     );

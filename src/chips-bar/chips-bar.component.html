@@ -1,45 +1,44 @@
 @if (type === 'bar') {
   <div class="chips-bar-container">
     <mat-chip-set>
-      <mat-chip 
-      *ngFor="let filter of filters" 
-      class="chip">
-      {{ filter.label }}
-      <mat-icon 
-      matChipRemove 
-      class="chip-remove-icon"
-      (click)="removeFilter(filter.id)">
-      cancel
-    </mat-icon>
-    </mat-chip>
-  </mat-chip-set>
+      @for (filter of filters; track filter.id) {
+        <app-chip
+          [id]="filter.id"
+          [label]="filter.label"
+          [disabled]="filter.disabled ?? false"
+          [selected]="selectedChipId() === filter.id"
+          (chipClick)="selectChip($event)"
+          (removed)="removeFilter($event)"
+        />
+      }
+    </mat-chip-set>
   </div>
 } @else {
-
   <div class="chips-dropdown-container">
     <div class="chips-dropdown-header" (click)="toggleExpanded()">
       <span class="chips-dropdown-title">Selected Filters</span>
       <div class="chips-dropdown-header-right">
         <span class="chips-dropdown-count">{{ filters.length }}</span>
         <mat-icon class="chips-dropdown-toggle-icon">
-        {{ isExpanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}
-      </mat-icon>
+          {{ isExpanded() ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}
+        </mat-icon>
+      </div>
     </div>
+    @if (isExpanded()) {
+      <div class="chips" [class.expanded]="isExpanded()">
+        <mat-chip-set>
+          @for (filter of filters; track filter.id) {
+            <app-chip
+              [id]="filter.id"
+              [label]="filter.label"
+              [disabled]="filter.disabled ?? false"
+              [selected]="selectedChipId() === filter.id"
+              (chipClick)="selectChip($event)"
+              (removed)="removeFilter($event)"
+            />
+          }
+        </mat-chip-set>
+      </div>
+    }
   </div>
-  <div class="chips" [class.expanded]="isExpanded" *ngIf="isExpanded">
-    <mat-chip-set>
-      <mat-chip 
-      *ngFor="let filter of filters" 
-      class="chip">
-      {{ filter.label }}
-      <mat-icon 
-      matChipRemove 
-      class="chip-remove-icon"
-      (click)="removeFilter(filter.id)">
-      cancel
-    </mat-icon>
-  </mat-chip>
-</mat-chip-set>
-</div>
-</div>
 }

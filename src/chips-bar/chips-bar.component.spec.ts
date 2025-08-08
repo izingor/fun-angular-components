@@ -1,272 +1,158 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatIconModule } from '@angular/material/icon';
-
-import { FilterChipsComponent } from './chips-bar.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { ChipsBarComponent } from './chips-bar.component';
 import { FilterChip } from './filter-chip.interface';
 
-describe('FilterChipsComponent', () => {
-  let component: FilterChipsComponent;
-  let fixture: ComponentFixture<FilterChipsComponent>;
+describe('ChipsBarComponent (updated)', () => {
+  let component: ChipsBarComponent;
+  let fixture: ComponentFixture<ChipsBarComponent>;
 
-  const mockFilters: FilterChip[] = [
-    { id: 1, label: 'Category: Electronics' },
-    { id: 2, label: 'Price: $100-$200' },
-    { id: 'brand', label: 'Brand: Apple' }
+  const baseFilters: FilterChip[] = [
+    { id: '1', label: 'Category: Electronics' },
+    { id: '2', label: 'Price: $100-$200' },
+    { id: 'brand', label: 'Brand: Apple' },
+    { id: 'disabled', label: 'Disabled Chip Example', disabled: true },
+    { id: 'long', label: 'This is a very long filter label that should truncate nicely' }
   ];
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        FilterChipsComponent,
-        MatChipsModule,
-        MatIconModule,
-        NoopAnimationsModule
-      ]
-    })
-    .compileComponents();
+      imports: [ChipsBarComponent, NoopAnimationsModule, MatTooltipModule]
+    }).compileComponents();
 
-    fixture = TestBed.createComponent(FilterChipsComponent);
+    fixture = TestBed.createComponent(ChipsBarComponent);
     component = fixture.componentInstance;
   });
 
-  describe('Component Initialization', () => {
-    it('should create', () => {
-      expect(component).toBeTruthy();
-    });
-
-    it('should initialize with default values', () => {
-      expect(component.filters).toEqual([]);
-      expect(component.isExpanded).toBeFalse();
-    });
-
-    it('should initialize with empty filterRemoved EventEmitter', () => {
-      expect(component.filterRemoved).toBeDefined();
-      expect(component.filterRemoved.observers.length).toBe(0);
-    });
+  it('should create', () => {
+    expect(component).toBeTruthy();
   });
 
-  describe('Input Properties', () => {
-    it('should accept filters input', () => {
-      component.filters = mockFilters;
-      fixture.detectChanges();
-
-      expect(component.filters).toEqual(mockFilters);
-      expect(component.filters.length).toBe(3);
-    });
-
-    it('should display correct filter count in header', () => {
-      component.filters = mockFilters;
-      fixture.detectChanges();
-
-      const filterCount = fixture.debugElement.query(By.css('.filter-count'));
-      expect(filterCount.nativeElement.textContent.trim()).toBe('3');
-    });
-
-    it('should handle empty filters array', () => {
-      component.filters = [];
-      fixture.detectChanges();
-
-      const filterCount = fixture.debugElement.query(By.css('.filter-count'));
-      expect(filterCount.nativeElement.textContent.trim()).toBe('0');
-    });
+  it('should render provided filters as chips (bar mode)', () => {
+    component.filters = baseFilters;
+    fixture.detectChanges();
+    const chips = fixture.debugElement.queryAll(By.css('mat-chip'));
+    expect(chips.length).toBe(baseFilters.length);
   });
 
-  describe('Toggle Functionality', () => {
-    it('should toggle isExpanded when toggleExpanded is called', () => {
-      expect(component.isExpanded).toBeFalse();
-      
-      component.toggleExpanded();
-      expect(component.isExpanded).toBeTrue();
-      
-      component.toggleExpanded();
-      expect(component.isExpanded).toBeFalse();
-    });
-
-    it('should toggle when filter header is clicked', () => {
-      const filterHeader = fixture.debugElement.query(By.css('.filter-header'));
-      
-      expect(component.isExpanded).toBeFalse();
-      
-      filterHeader.nativeElement.click();
-      expect(component.isExpanded).toBeTrue();
-      
-      filterHeader.nativeElement.click();
-      expect(component.isExpanded).toBeFalse();
-    });
-
-    it('should show correct icon based on expanded state', () => {
-      fixture.detectChanges();
-      const toggleIcon = fixture.debugElement.query(By.css('.filter-toggle-icon'));
-      
-      // Initially collapsed
-      expect(toggleIcon.nativeElement.textContent.trim()).toBe('keyboard_arrow_down');
-      
-      // After expanding
-      component.toggleExpanded();
-      fixture.detectChanges();
-      expect(toggleIcon.nativeElement.textContent.trim()).toBe('keyboard_arrow_up');
-    });
-  });
-
-  describe('Filter Display', () => {
+  describe('Selection behaviour', () => {
     beforeEach(() => {
-      component.filters = mockFilters;
-      component.isExpanded = true;
+      component.filters = baseFilters;
       fixture.detectChanges();
     });
 
-    it('should display filter chips when expanded', () => {
-      const filterChipsContainer = fixture.debugElement.query(By.css('.filter-chips'));
-      expect(filterChipsContainer).toBeTruthy();
-      
-      const chips = fixture.debugElement.queryAll(By.css('mat-chip'));
-      expect(chips.length).toBe(3);
-    });
-
-    it('should not display filter chips when collapsed', () => {
-      component.isExpanded = false;
+    it('should emit chipClicked and add selected class when a chip is clicked', () => {
+      spyOn(component.chipClicked, 'emit');
+      const firstChip = fixture.debugElement.queryAll(By.css('mat-chip'))[0];
+      firstChip.nativeElement.click();
       fixture.detectChanges();
-      
-      const filterChipsContainer = fixture.debugElement.query(By.css('.filter-chips'));
-      expect(filterChipsContainer).toBeFalsy();
+      expect(component.chipClicked.emit).toHaveBeenCalledWith('1');
+      expect(firstChip.nativeElement.classList).toContain('selected');
     });
 
-    it('should display correct filter labels', () => {
+    it('should ensure only one chip is selected at a time', () => {
       const chips = fixture.debugElement.queryAll(By.css('mat-chip'));
-      
-      expect(chips[0].nativeElement.textContent).toContain('Category: Electronics');
-      expect(chips[1].nativeElement.textContent).toContain('Price: $100-$200');
-      expect(chips[2].nativeElement.textContent).toContain('Brand: Apple');
+      chips[0].nativeElement.click();
+      chips[1].nativeElement.click();
+      fixture.detectChanges();
+      expect(chips[0].nativeElement.classList).not.toContain('selected');
+      expect(chips[1].nativeElement.classList).toContain('selected');
     });
 
-    it('should display remove icons for each chip', () => {
-      const removeIcons = fixture.debugElement.queryAll(By.css('.remove-icon'));
-      expect(removeIcons.length).toBe(3);
-      
-      removeIcons.forEach(icon => {
-        expect(icon.nativeElement.textContent.trim()).toBe('cancel');
-      });
+    it('should not select or emit for disabled chip', () => {
+      spyOn(component.chipClicked, 'emit');
+      const disabledChip = fixture.debugElement.queryAll(By.css('mat-chip'))
+        .find(de => de.nativeElement.textContent.includes('Disabled Chip Example'))!;
+      disabledChip.nativeElement.click();
+      fixture.detectChanges();
+      expect(component.chipClicked.emit).not.toHaveBeenCalled();
+      expect(disabledChip.nativeElement.classList).toContain('disabled');
+      expect(disabledChip.nativeElement.classList).not.toContain('selected');
+    });
+
+    it('should deselect chip and emit null when clicking selected chip again', () => {
+      spyOn(component.chipClicked, 'emit');
+      const firstChip = fixture.debugElement.queryAll(By.css('mat-chip'))[0];
+      firstChip.nativeElement.click();
+      fixture.detectChanges();
+      expect(component.selectedChipId()).toBe('1');
+      firstChip.nativeElement.click();
+      fixture.detectChanges();
+      expect(component.selectedChipId()).toBeNull();
+      expect(firstChip.nativeElement.classList).not.toContain('selected');
+      const calls = (component.chipClicked.emit as jasmine.Spy).calls.allArgs();
+      expect(calls[0][0]).toBe('1');
+      expect(calls[1][0]).toBeNull();
     });
   });
 
-  describe('Filter Removal', () => {
+  describe('Removal', () => {
     beforeEach(() => {
-      component.filters = mockFilters;
-      component.isExpanded = true;
+      component.filters = baseFilters;
       fixture.detectChanges();
     });
 
-    it('should emit filterRemoved event when removeFilter is called', () => {
-      spyOn(component.filterRemoved, 'emit');
-      
-      component.removeFilter(1);
-      
-      expect(component.filterRemoved.emit).toHaveBeenCalledWith(1);
+    it('should emit chipRemoved when clicking remove icon on enabled chip', () => {
+      spyOn(component.chipRemoved, 'emit');
+      const firstRemoveIcon = fixture.debugElement.queryAll(By.css('.chip-remove-icon'))[0];
+      firstRemoveIcon.nativeElement.click();
+      expect(component.chipRemoved.emit).toHaveBeenCalledWith('1');
     });
 
-    it('should emit filterRemoved event when remove icon is clicked', () => {
-      spyOn(component.filterRemoved, 'emit');
-      
-      const removeIcons = fixture.debugElement.queryAll(By.css('.remove-icon'));
-      removeIcons[0].nativeElement.click();
-      
-      expect(component.filterRemoved.emit).toHaveBeenCalledWith(1);
+    it('should not show remove icon for disabled chip', () => {
+      const disabledChip = fixture.debugElement.queryAll(By.css('mat-chip'))
+        .find(de => de.nativeElement.textContent.includes('Disabled Chip Example'))!;
+      const removeIcon = disabledChip.query(By.css('.chip-remove-icon'));
+      expect(removeIcon).toBeFalsy();
     });
 
-    it('should emit correct filter id for different chip types', () => {
-      spyOn(component.filterRemoved, 'emit');
-      
-      // Test numeric id
-      component.removeFilter(1);
-      expect(component.filterRemoved.emit).toHaveBeenCalledWith(1);
-      
-      // Test string id
-      component.removeFilter('brand');
-      expect(component.filterRemoved.emit).toHaveBeenCalledWith('brand');
-    });
-
-    it('should emit filterRemoved for each remove icon click', () => {
-      spyOn(component.filterRemoved, 'emit');
-      
-      const removeIcons = fixture.debugElement.queryAll(By.css('.remove-icon'));
-      
-      removeIcons[0].nativeElement.click();
-      expect(component.filterRemoved.emit).toHaveBeenCalledWith(1);
-      
-      removeIcons[1].nativeElement.click();
-      expect(component.filterRemoved.emit).toHaveBeenCalledWith(2);
-      
-      removeIcons[2].nativeElement.click();
-      expect(component.filterRemoved.emit).toHaveBeenCalledWith('brand');
+    it('should clear selection if selected chip is removed', () => {
+      const chips = fixture.debugElement.queryAll(By.css('mat-chip'));
+      chips[1].nativeElement.click();
+      fixture.detectChanges();
+      expect(component.selectedChipId()).toBe('2');
+      spyOn(component.chipRemoved, 'emit');
+      const secondRemoveIcon = fixture.debugElement.queryAll(By.css('.chip-remove-icon'))[1];
+      secondRemoveIcon.nativeElement.click();
+      expect(component.chipRemoved.emit).toHaveBeenCalledWith('2');
+      expect(component.selectedChipId()).toBeNull();
     });
   });
 
-  describe('CSS Classes', () => {
-    it('should apply expanded class when isExpanded is true', () => {
-      component.filters = mockFilters;
-      component.isExpanded = true;
+  describe('Truncation & Tooltip', () => {
+    beforeEach(() => {
+      component.filters = baseFilters;
       fixture.detectChanges();
-      
-      const filterChips = fixture.debugElement.query(By.css('.filter-chips'));
-      expect(filterChips.nativeElement.classList).toContain('expanded');
     });
 
-    it('should not apply expanded class when isExpanded is false', () => {
-      component.filters = mockFilters;
-      component.isExpanded = false;
-      fixture.detectChanges();
-      
-      const filterChips = fixture.debugElement.query(By.css('.filter-chips'));
-      expect(filterChips).toBeFalsy(); // Element shouldn't exist when collapsed
+    it('should add truncated class for long label span', () => {
+      const longChipSpan = fixture.debugElement.queryAll(By.css('.chip-label'))
+        .find(de => de.nativeElement.textContent.includes('This is a very long'))!;
+      expect(longChipSpan.nativeElement.classList).toContain('truncated');
+    });
+
+    it('should have tooltip directive applied for long chip', () => {
+      const longChip = fixture.debugElement.queryAll(By.css('mat-chip'))
+        .find(de => de.nativeElement.textContent.includes('This is a very long'))!;
+      const hasTooltipAttr = longChip.attributes?.['ng-reflect-message'] || longChip.attributes?.['mattooltip'];
+      expect(hasTooltipAttr).toBeDefined();
     });
   });
 
-  describe('Edge Cases', () => {
-    it('should handle filters with special characters in labels', () => {
-      const specialFilters: FilterChip[] = [
-        { id: 1, label: 'Category: "Special & Unique"' },
-        { id: 2, label: 'Price: <$50' }
-      ];
-      
-      component.filters = specialFilters;
-      component.isExpanded = true;
+  describe('Dropdown type expansion', () => {
+    it('should toggle expansion in dropdown mode', () => {
+      component.type = 'dropdown';
+      component.filters = baseFilters.slice(0, 2);
       fixture.detectChanges();
-      
-      const chips = fixture.debugElement.queryAll(By.css('mat-chip'));
-      expect(chips[0].nativeElement.textContent).toContain('Category: "Special & Unique"');
-      expect(chips[1].nativeElement.textContent).toContain('Price: <$50');
-    });
-
-    it('should handle single filter', () => {
-      const singleFilter: FilterChip[] = [{ id: 'single', label: 'Single Filter' }];
-      
-      component.filters = singleFilter;
-      component.isExpanded = true;
-      fixture.detectChanges();
-      
-      const filterCount = fixture.debugElement.query(By.css('.filter-count'));
-      expect(filterCount.nativeElement.textContent.trim()).toBe('1');
-      
-      const chips = fixture.debugElement.queryAll(By.css('mat-chip'));
-      expect(chips.length).toBe(1);
-    });
-
-    it('should handle very long filter labels', () => {
-      const longLabelFilter: FilterChip[] = [{
-        id: 'long',
-        label: 'This is a very long filter label that might cause layout issues if not handled properly'
-      }];
-      
-      component.filters = longLabelFilter;
-      component.isExpanded = true;
-      fixture.detectChanges();
-      
-      const chips = fixture.debugElement.queryAll(By.css('mat-chip'));
-      expect(chips.length).toBe(1);
-      expect(chips[0].nativeElement.textContent).toContain('This is a very long filter label');
+      const header = fixture.debugElement.query(By.css('.chips-dropdown-header'));
+      expect(header).toBeTruthy();
+      expect(component.isExpanded()).toBeFalse();
+      header.nativeElement.click();
+      expect(component.isExpanded()).toBeTrue();
+      header.nativeElement.click();
+      expect(component.isExpanded()).toBeFalse();
     });
   });
 });
