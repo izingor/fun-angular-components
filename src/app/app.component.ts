@@ -20,9 +20,9 @@ export class AppComponent {
     { id: 'customerDate', label: 'Customer ' , value: 'july-1-15' },
     { id: 'shipCount', label: 'Ship ', value: '3 Selected' },
     { id: 'weight', label: 'Weight ', value: 'in kg' },
-    { id: 'openDate', label: 'Open date ', value: '' },
+    { id: 'openDate', label: 'Open date ', value: 'what' },
     { id: 'type', label: 'Type: ', value: 'Air' },
-    { id: 'station', label: 'Customer Station ', value: '2 selected' }
+    { id: 'station', label: 'Customer Station ', value: '2 selected dasdadadadasdads' }
   ];
 
   onButtonClick() {

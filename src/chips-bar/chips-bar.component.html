@@ -7,14 +7,16 @@
           [class.selected]="selectedChipId() === filter.id"
           [class.disabled]="filter.disabled"
           (click)="selectChip(filter.id)"
-          [matTooltip]="filter.label"
+          [matTooltip]="buildDisplayText(filter)"
           matTooltipPosition="below"
-        ><span class="chip-label" [class.truncated]="filter.label.length > 24">{{ filter.label }}: </span>
-          <span class="chip-value" [class.truncated]="filter.label.length > 24">{{ filter.value }}</span>
+        >
+          <span class="chip-text" [class.truncated]="isTruncated(filter)">
+            {{ buildDisplayText(filter) }}
+          </span>
           @if (!filter.disabled) {
             <mat-icon
               matChipRemove
-              class="chip-remove-icon no-border-chip"
+              class="chip-remove-icon"
               (click)="removeFilter(filter.id); $event.stopPropagation();"
             >close</mat-icon>
           }
@@ -42,10 +44,12 @@
               [class.selected]="selectedChipId() === filter.id"
               [class.disabled]="filter.disabled"
               (click)="selectChip(filter.id)"
-              [matTooltip]="filter.label"
+              [matTooltip]="buildDisplayText(filter)"
               matTooltipPosition="below"
             >
-              <span class="chip-label" [class.truncated]="filter.label.length > 24">{{ filter.label }}</span>
+              <span class="chip-text" [class.truncated]="isTruncated(filter)">
+                {{ buildDisplayText(filter) }}
+              </span>
               @if (!filter.disabled) {
                 <mat-icon
                   matChipRemove

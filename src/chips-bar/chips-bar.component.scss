@@ -212,6 +212,13 @@ mat-chip-set {
   font-weight: bold;
   
 }
+.chip-text.truncated {
+  max-width: 160px;
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
 /* High contrast mode support */
 @media (forced-colors: active) {

@@ -14,6 +14,7 @@ import { FilterChip } from "./filter-chip.interface";
 export class ChipsBarComponent {
     @Input() filters: FilterChip[] = [];
     @Input() type: "bar" | "dropdown" = "bar";
+    @Input() truncateAfter = 24;
     @Output() chipRemoved = new EventEmitter<string>();
     @Output() chipClicked = new EventEmitter<string | null>();
 
@@ -47,5 +48,13 @@ export class ChipsBarComponent {
         }
         this.selectedChipIdSignal.set(filterId);
         this.chipClicked.emit(filterId);
+    }
+
+    buildDisplayText(chip: FilterChip): string {
+        return chip.value ? `${chip.label}: ${chip.value}` : chip.label;
+    }
+
+    isTruncated(chip: FilterChip): boolean {
+        return this.buildDisplayText(chip).length > this.truncateAfter;
     }
 }
