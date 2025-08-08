@@ -2,14 +2,23 @@
   <div class="chips-bar-container">
     <mat-chip-set>
       @for (filter of filters; track filter.id) {
-        <app-chip
-          [id]="filter.id"
-          [label]="filter.label"
-          [disabled]="filter.disabled ?? false"
-          [selected]="selectedChipId() === filter.id"
-          (chipClick)="selectChip($event)"
-          (removed)="removeFilter($event)"
-        />
+        <mat-chip
+          class="chip"
+          [class.selected]="selectedChipId() === filter.id"
+          [class.disabled]="filter.disabled"
+          (click)="selectChip(filter.id)"
+          [matTooltip]="filter.label"
+          matTooltipPosition="below"
+        ><span class="chip-label" [class.truncated]="filter.label.length > 24">{{ filter.label }}: </span>
+          <span class="chip-value" [class.truncated]="filter.label.length > 24">{{ filter.value }}</span>
+          @if (!filter.disabled) {
+            <mat-icon
+              matChipRemove
+              class="chip-remove-icon no-border-chip"
+              (click)="removeFilter(filter.id); $event.stopPropagation();"
+            >close</mat-icon>
+          }
+        </mat-chip>
       }
     </mat-chip-set>
   </div>
@@ -28,14 +37,23 @@
       <div class="chips" [class.expanded]="isExpanded()">
         <mat-chip-set>
           @for (filter of filters; track filter.id) {
-            <app-chip
-              [id]="filter.id"
-              [label]="filter.label"
-              [disabled]="filter.disabled ?? false"
-              [selected]="selectedChipId() === filter.id"
-              (chipClick)="selectChip($event)"
-              (removed)="removeFilter($event)"
-            />
+            <mat-chip
+              class="chip"
+              [class.selected]="selectedChipId() === filter.id"
+              [class.disabled]="filter.disabled"
+              (click)="selectChip(filter.id)"
+              [matTooltip]="filter.label"
+              matTooltipPosition="below"
+            >
+              <span class="chip-label" [class.truncated]="filter.label.length > 24">{{ filter.label }}</span>
+              @if (!filter.disabled) {
+                <mat-icon
+                  matChipRemove
+                  class="chip-remove-icon"
+                  (click)="removeFilter(filter.id); $event.stopPropagation();"
+                >cancel</mat-icon>
+              }
+            </mat-chip>
           }
         </mat-chip-set>
       </div>

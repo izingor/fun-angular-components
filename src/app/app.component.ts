@@ -17,12 +17,12 @@ export class AppComponent {
   currentPlacement: PopoverPlacement = 'bottom';
 
   activeFilters: FilterChip[] = [
-    { id: 'customerDate', label: 'Customer: July 1-15' },
-    { id: 'shipCount', label: 'Ship: 3 Selected' },
-    { id: 'weight', label: 'Weight in kg' },
-    { id: 'openDate', label: 'Open date' },
-    { id: 'type', label: 'Type: Air' },
-    { id: 'station', label: 'Customer Station: 2 selected' }
+    { id: 'customerDate', label: 'Customer ' , value: 'july-1-15' },
+    { id: 'shipCount', label: 'Ship ', value: '3 Selected' },
+    { id: 'weight', label: 'Weight ', value: 'in kg' },
+    { id: 'openDate', label: 'Open date ', value: '' },
+    { id: 'type', label: 'Type: ', value: 'Air' },
+    { id: 'station', label: 'Customer Station ', value: '2 selected' }
   ];
 
   onButtonClick() {

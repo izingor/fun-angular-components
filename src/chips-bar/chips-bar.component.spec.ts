@@ -10,11 +10,11 @@ describe('ChipsBarComponent (updated)', () => {
   let fixture: ComponentFixture<ChipsBarComponent>;
 
   const baseFilters: FilterChip[] = [
-    { id: '1', label: 'Category: Electronics' },
-    { id: '2', label: 'Price: $100-$200' },
-    { id: 'brand', label: 'Brand: Apple' },
-    { id: 'disabled', label: 'Disabled Chip Example', disabled: true },
-    { id: 'long', label: 'This is a very long filter label that should truncate nicely' }
+    { id: '1', label: 'Category: Electronics', value:'electronics' },
+    { id: '2', label: 'Price: $100-$200', value:'100-200' },
+    { id: 'brand', label: 'Brand: Apple', value:'apple' },
+    { id: 'disabled', label: 'Disabled Chip Example', disabled: true, value:'disabled' },
+    { id: 'long', label: 'This is a very long filter label that should truncate nicely', value:'long' }
   ];
 
   beforeEach(async () => {

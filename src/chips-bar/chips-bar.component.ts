@@ -4,11 +4,10 @@ import { MatChipsModule } from "@angular/material/chips";
 import { MatIconModule } from "@angular/material/icon";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { FilterChip } from "./filter-chip.interface";
-import { ChipComponent } from "../chip/chip.component";
 
 @Component({
     selector: "chips-bar",
-    imports: [CommonModule, MatChipsModule, MatIconModule, MatTooltipModule, ChipComponent],
+    imports: [CommonModule, MatChipsModule, MatIconModule, MatTooltipModule],
     templateUrl: "./chips-bar.component.html",
     styleUrl: "./chips-bar.component.scss",
 })

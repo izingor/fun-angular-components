@@ -1,3 +1,13 @@
+@use '@angular/material' as mat;
+
+// Customize the entire app. Change :root to your selector if you want to scope the styles.
+:root {
+  @include mat.chips-overrides((
+    disabled-label-text-color: orange,
+    disabled-outline-color: none,
+  ));
+}
+
 .chips-dropdown-container {
   border-bottom: 1px solid #BDBDBD;
   padding-bottom: 16px;
@@ -61,3 +71,156 @@
   }
 }
 
+mat-chip-set {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Design tokens (approximation of Figma). Override via :host-context or global if needed */
+:host {
+  --chip-bg: #DEEDFA;
+  --chip-color: #344054;
+  --chip-border-color: #d0d5dd;
+  --chip-border: 1px solid var(--chip-border-color);
+  --chip-radius: 16px;
+  --chip-padding-x: 12px;
+  --chip-padding-y: 4px;
+  --chip-font-size: 13px;
+  --chip-font-weight: 500;
+  --chip-gap: 6px;
+  --chip-hover-bg: #eef2f6;
+  --chip-active-bg: #e2e8f0;
+  --chip-selected-bg: #2563eb;
+  --chip-selected-color: #ffffff;
+  --chip-selected-border-color: #1d4ed8;
+  --chip-focus-ring: 0 0 0 2px #ffffff, 0 0 0 4px rgba(37, 99, 235, 0.4);
+  --chip-disabled-bg: #f2f4f7;
+  --chip-disabled-color: #98a2b3;
+  --chip-remove-color: #64748b;
+  --chip-remove-hover: #475569;
+  --chip-transition: background-color .18s ease, color .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+
+
+
+.chip {
+  background: var(--chip-bg) !important;
+  color: var(--chip-color) !important;
+  border: var(--chip-border) !important;
+  border-radius: var(--chip-radius) !important;
+  padding: var(--chip-padding-y) var(--chip-padding-x) !important;
+  font-size: var(--chip-font-size) !important;
+  font-weight: var(--chip-font-weight) !important;
+  line-height: 1.25 !important;
+  min-height: 32px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: var(--chip-gap) !important;
+  cursor: pointer;
+  user-select: none;
+  box-shadow: none !important;
+  position: relative;
+  transition: var(--chip-transition);
+  max-width: 100%;
+
+  &:hover:not(.disabled):not(.selected) {
+    background: var(--chip-hover-bg) !important;
+  }
+
+  &:active:not(.disabled):not(.selected) {
+    background: var(--chip-active-bg) !important;
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--chip-focus-ring);
+  }
+
+  &.selected {
+    background: var(--chip-selected-bg) !important;
+    color: var(--chip-selected-color) !important;
+    border-color: var(--chip-selected-border-color) !important;
+
+    .chip-remove-icon {
+      color: var(--chip-selected-color) !important;
+      opacity: 0.75;
+      &:hover { opacity: 1; }
+    }
+  }
+
+  &.disabled {
+    background: var(--chip-disabled-bg) !important;
+    color: var(--chip-disabled-color) !important;
+    border-color: var(--chip-disabled-bg) !important;
+    cursor: not-allowed;
+    .chip-remove-icon { display: none; }
+  }
+
+  /* Show remove only on hover by default (except selected) */
+  &:not(.selected):not(.disabled) .chip-remove-icon { opacity: 0; pointer-events: none; transition: opacity .15s ease; }
+  &:hover:not(.selected):not(.disabled) .chip-remove-icon { opacity: 1; pointer-events: auto; }
+}
+
+/* Angular Material MDC chip internal overrides to remove default outline/border */
+:host ::ng-deep .mat-mdc-chip.mat-mdc-standard-chip {
+  /* Remove outline variant border */
+  --mdc-chip-outline-color: transparent;
+  --mdc-chip-outline-width: 0;
+  --mdc-chip-disabled-outline-color: transparent;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+:host ::ng-deep .mat-mdc-chip.mat-mdc-standard-chip.mdc-evolution-chip--selected {
+  --mdc-chip-outline-color: transparent;
+  --mdc-chip-outline-width: 0;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Remove possible focus ring outline border if appearing as black line */
+:host ::ng-deep .mat-mdc-chip .mdc-evolution-chip__action:focus-visible {
+  outline: none !important;
+  box-shadow: var(--chip-focus-ring, 0 0 0 2px #fff, 0 0 0 4px rgba(37,99,235,.4));
+}
+
+.chip-remove-icon {
+  color: var(--chip-remove-color) !important;
+  font-size: 16px !important;
+  width: 16px !important;
+  height: 16px !important;
+  cursor: pointer !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: color .18s ease, opacity .15s ease;
+  border-radius: 50%;
+  &:hover { color: var(--chip-remove-hover) !important; }
+  &:active { transform: scale(.9); }
+}
+
+.chip-value.truncated {
+  max-width: 160px; // constraint for truncation
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chip-label{
+  font-weight: bold;
+  
+}
+
+/* High contrast mode support */
+@media (forced-colors: active) {
+  .chip {
+    background: Canvas;
+    color: CanvasText;
+    border-color: CanvasText !important;
+    &.selected { background: Highlight !important; color: HighlightText !important; }
+    &.disabled { opacity: 0.6; }
+  }
+  .chip-remove-icon { forced-color-adjust: auto; }
+}
