@@ -1,0 +1,13 @@
+<div>
+  <button (click)="loadBaconText()" [disabled]="isLoading()">
+    {{ isLoading() ? 'Loading...' : 'Load Bacon Text' }}
+  </button>
+
+  @if (baconText().length > 0) {
+    <div class="bacon-content">
+      @for (paragraph of baconText(); track $index) {
+        <p>{{ paragraph }}</p>
+      }
+    </div>
+  }
+</div>

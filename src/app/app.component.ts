@@ -3,10 +3,11 @@ import { Component } from '@angular/core';
 import { PopoverComponent, PopoverPlacement } from '../popover/popover.component';
 import { ChipsBarComponent } from '../chips-bar/chips-bar.component';
 import { FilterChip } from '../chips-bar/filter-chip.interface';
+import { TestExampleComponent } from '../test-example/test-example.component';
 
 @Component({
   selector: 'app-root',
-  imports: [PopoverComponent, CommonModule, ChipsBarComponent],
+  imports: [PopoverComponent, CommonModule, ChipsBarComponent, TestExampleComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
