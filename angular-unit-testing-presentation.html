@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unit Testing in Angular with Karma</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .presentation {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #dd2c00 0%, #ff6f00 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 50px;
+        }
+
+        .section h2 {
+            color: #dd2c00;
+            font-size: 2.2em;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #ff6f00;
+            padding-bottom: 10px;
+        }
+
+        .section h3 {
+            color: #333;
+            font-size: 1.5em;
+            margin: 25px 0 15px 0;
+            position: relative;
+        }
+
+        .section h3:before {
+            content: "▶";
+            color: #ff6f00;
+            margin-right: 10px;
+        }
+
+        .importance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .importance-card {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 5px solid #ff6f00;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .importance-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .importance-card h4 {
+            color: #dd2c00;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow-x: auto;
+            position: relative;
+            border: 1px solid #4a5568;
+        }
+
+        .code-block:before {
+            content: "TypeScript";
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: #ff6f00;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .code-block pre {
+            margin: 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .function-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .function-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .function-card:before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #dd2c00, #ff6f00);
+        }
+
+        .function-card:hover {
+            border-color: #ff6f00;
+            box-shadow: 0 10px 25px rgba(221, 44, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .function-name {
+            color: #dd2c00;
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-family: 'Courier New', monospace;
+            background: #f7fafc;
+            padding: 8px 12px;
+            border-radius: 6px;
+            display: inline-block;
+        }
+
+        .best-practices {
+            background: linear-gradient(135deg, #e8f5e8 0%, #f0f8f0 100%);
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid #c6f6d5;
+            margin: 30px 0;
+        }
+
+        .best-practices h3 {
+            color: #22543d;
+        }
+
+        .best-practices ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .best-practices li {
+            margin: 10px 0;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #48bb78;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .best-practices li:before {
+            content: "✓";
+            color: #48bb78;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #fff3cd 0%, #ffeaa7 100%);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #f39c12;
+            margin: 20px 0;
+        }
+
+        .highlight .icon {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+
+        .footer {
+            background: #2d3748;
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .footer h3 {
+            margin-bottom: 15px;
+            color: #ff6f00;
+        }
+
+        ul, ol {
+            padding-left: 25px;
+            margin: 15px 0;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+
+        .angular-logo {
+            display: inline-block;
+            background: linear-gradient(45deg, #dd2c00, #ff6f00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .function-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .importance-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="presentation">
+            <div class="header">
+                <h1>Unit Testing in <span class="angular-logo">Angular</span></h1>
+                <div class="subtitle">Testing with Karma & Jasmine Framework</div>
+            </div>
+
+            <div class="content">
+                <!-- Introduction Section -->
+                <div class="section">
+                    <h2>🎯 What is Unit Testing?</h2>
+                    <p>Unit testing is a software testing method where individual components or functions are tested in isolation to ensure they work correctly. In Angular, we test components, services, pipes, and directives separately to verify their behavior.</p>
+                    
+                    <div class="highlight">
+                        <span class="icon">💡</span>
+                        <strong>Key Concept:</strong> Unit tests focus on testing the smallest testable parts of an application in isolation from other components.
+                    </div>
+                </div>
+
+                <!-- Why Unit Testing is Important -->
+                <div class="section">
+                    <h2>🚀 Why is Unit Testing Important?</h2>
+                    
+                    <div class="importance-grid">
+                        <div class="importance-card">
+                            <h4>🛡️ Early Bug Detection</h4>
+                            <p>Catch bugs early in development when they're cheaper and easier to fix. Prevents issues from reaching production.</p>
+                        </div>
+                        
+                        <div class="importance-card">
+                            <h4>🔄 Refactoring Confidence</h4>
+                            <p>Make changes to your code with confidence knowing that tests will catch any regressions or breaking changes.</p>
+                        </div>
+                        
+                        <div class="importance-card">
+                            <h4>📚 Documentation</h4>
+                            <p>Tests serve as living documentation, showing how components and services are expected to behave.</p>
+                        </div>
+                        
+                        <div class="importance-card">
+                            <h4>🏗️ Better Architecture</h4>
+                            <p>Writing testable code forces you to create modular, loosely coupled components with clear interfaces.</p>
+                        </div>
+                        
+                        <div class="importance-card">
+                            <h4>⚡ Faster Development</h4>
+                            <p>Quick feedback loop allows developers to verify functionality without manual testing in the browser.</p>
+                        </div>
+                        
+                        <div class="importance-card">
+                            <h4>🎯 Code Quality</h4>
+                            <p>Encourages writing cleaner, more maintainable code with better separation of concerns.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Angular Testing Setup -->
+                <div class="section">
+                    <h2>⚙️ Angular Testing Setup</h2>
+                    <p>Angular comes with a powerful testing setup out of the box:</p>
+                    
+                    <ul>
+                        <li><strong>Karma:</strong> Test runner that executes tests in real browsers</li>
+                        <li><strong>Jasmine:</strong> Testing framework that provides the testing structure and assertion methods</li>
+                        <li><strong>Angular Testing Utilities:</strong> Tools for testing Angular-specific features</li>
+                    </ul>
+
+                    <div class="code-block">
+                        <pre>
+// Running tests
+ng test
+
+// Running tests with code coverage
+ng test --code-coverage
+
+// Running tests in watch mode (default)
+ng test --watch
+
+// Running tests once and exit
+ng test --watch=false
+                        </pre>
+                    </div>
+                </div>
+
+                <!-- Testing Functions -->
+                <div class="section">
+                    <h2>🔧 Essential Testing Functions</h2>
+                    
+                    <div class="function-grid">
+                        <div class="function-card">
+                            <div class="function-name">describe()</div>
+                            <p><strong>Purpose:</strong> Groups related tests together. Creates a test suite.</p>
+                            <p><strong>Usage:</strong> Organizes tests by component, service, or feature.</p>
+                            <div class="code-block">
+                                <pre>
+describe('UserComponent', () => {
+  // All tests for UserComponent go here
+});
+                                </pre>
+                            </div>
+                        </div>
+
+                        <div class="function-card">
+                            <div class="function-name">it()</div>
+                            <p><strong>Purpose:</strong> Defines an individual test case. Each test should verify one specific behavior.</p>
+                            <p><strong>Usage:</strong> Write descriptive test names that explain what is being tested.</p>
+                            <div class="code-block">
+                                <pre>
+it('should create the component', () => {
+  expect(component).toBeTruthy();
+});
+                                </pre>
+                            </div>
+                        </div>
+
+                        <div class="function-card">
+                            <div class="function-name">beforeEach()</div>
+                            <p><strong>Purpose:</strong> Runs before each individual test. Used for setup and initialization.</p>
+                            <p><strong>Usage:</strong> Configure TestBed, create component instances, mock dependencies.</p>
+                            <div class="code-block">
+                                <pre>
+beforeEach(() => {
+  TestBed.configureTestingModule({
+    declarations: [UserComponent]
+  });
+  fixture = TestBed.createComponent(UserComponent);
+  component = fixture.componentInstance;
+});
+                                </pre>
+                            </div>
+                        </div>
+
+                        <div class="function-card">
+                            <div class="function-name">afterEach()</div>
+                            <p><strong>Purpose:</strong> Runs after each individual test. Used for cleanup.</p>
+                            <p><strong>Usage:</strong> Clean up resources, reset global state, clear timers.</p>
+                            <div class="code-block">
+                                <pre>
+afterEach(() => {
+  fixture.destroy();
+  // Clean up any global state
+});
+                                </pre>
+                            </div>
+                        </div>
+
+                        <div class="function-card">
+                            <div class="function-name">expect()</div>
+                            <p><strong>Purpose:</strong> Creates an assertion. Verifies that actual values match expected values.</p>
+                            <p><strong>Usage:</strong> Compare results with expected outcomes using matchers.</p>
+                            <div class="code-block">
+                                <pre>
+expect(component.title).toBe('My App');
+expect(component.users.length).toEqual(3);
+expect(element.textContent).toContain('Welcome');
+                                </pre>
+                            </div>
+                        </div>
+
+                        <div class="function-card">
+                            <div class="function-name">spyOn()</div>
+                            <p><strong>Purpose:</strong> Creates a spy to monitor function calls and control their behavior.</p>
+                            <p><strong>Usage:</strong> Mock dependencies, track method calls, control return values.</p>
+                            <div class="code-block">
+                                <pre>
+const spy = spyOn(userService, 'getUsers')
+  .and.returnValue(of(mockUsers));
+
+expect(spy).toHaveBeenCalled();
+expect(spy).toHaveBeenCalledWith('active');
+                                </pre>
+                            </div>
+                        </div>
+
+                        <div class="function-card">
+                            <div class="function-name">jasmine.createSpy()</div>
+                            <p><strong>Purpose:</strong> Creates a standalone spy function that doesn't exist on any object.</p>
+                            <p><strong>Usage:</strong> Mock callback functions, event handlers, or standalone functions.</p>
+                            <div class="code-block">
+                                <pre>
+const mockCallback = jasmine.createSpy('callback');
+component.onSubmit(mockCallback);
+expect(mockCallback).toHaveBeenCalled();
+                                </pre>
+                            </div>
+                        </div>
+
+                        <div class="function-card">
+                            <div class="function-name">fixture.detectChanges()</div>
+                            <p><strong>Purpose:</strong> Triggers Angular's change detection cycle manually in tests.</p>
+                            <p><strong>Usage:</strong> Update the DOM after changing component properties.</p>
+                            <div class="code-block">
+                                <pre>
+component.title = 'New Title';
+fixture.detectChanges();
+expect(compiled.textContent).toContain('New Title');
+                                </pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Common Matchers -->
+                <div class="section">
+                    <h2>🎯 Common Jasmine Matchers</h2>
+                    
+                    <div class="code-block">
+                        <pre>
+// Equality matchers
+expect(value).toBe(expected);           // Strict equality (===)
+expect(value).toEqual(expected);        // Deep equality
+expect(value).not.toBe(expected);       // Negation
+
+// Truthiness matchers
+expect(value).toBeTruthy();             // Truthy value
+expect(value).toBeFalsy();              // Falsy value
+expect(value).toBeNull();               // Null value
+expect(value).toBeUndefined();          // Undefined value
+expect(value).toBeDefined();            // Defined value
+
+// String matchers
+expect(string).toContain(substring);    // Contains substring
+expect(string).toMatch(/pattern/);      // Matches regex pattern
+
+// Number matchers
+expect(number).toBeGreaterThan(expected);
+expect(number).toBeLessThan(expected);
+expect(number).toBeCloseTo(expected, precision);
+
+// Array matchers
+expect(array).toContain(item);          // Array contains item
+expect(array.length).toBe(expected);    // Array length
+
+// Function matchers
+expect(spy).toHaveBeenCalled();         // Function was called
+expect(spy).toHaveBeenCalledWith(args); // Called with specific args
+expect(spy).toHaveBeenCalledTimes(n);   // Called specific number of times
+                        </pre>
+                    </div>
+                </div>
+
+                <!-- Practical Example -->
+                <div class="section">
+                    <h2>💻 Practical Example</h2>
+                    
+                    <h3>Component to Test</h3>
+                    <div class="code-block">
+                        <pre>
+// user.component.ts
+@Component({
+  selector: 'app-user',
+  template: `
+    &lt;h1&gt;{{title}}&lt;/h1&gt;
+    &lt;div *ngFor="let user of users"&gt;{{user.name}}&lt;/div&gt;
+    &lt;button (click)="loadUsers()"&gt;Load Users&lt;/button&gt;
+  `
+})
+export class UserComponent {
+  title = 'User Management';
+  users: User[] = [];
+
+  constructor(private userService: UserService) {}
+
+  loadUsers() {
+    this.userService.getUsers().subscribe(users => {
+      this.users = users;
+    });
+  }
+}
+                        </pre>
+                    </div>
+
+                    <h3>Complete Test Suite</h3>
+                    <div class="code-block">
+                        <pre>
+// user.component.spec.ts
+describe('UserComponent', () => {
+  let component: UserComponent;
+  let fixture: ComponentFixture&lt;UserComponent&gt;;
+  let userService: jasmine.SpyObj&lt;UserService&gt;;
+  let compiled: HTMLElement;
+
+  // Setup before each test
+  beforeEach(() => {
+    const userServiceSpy = jasmine.createSpyObj('UserService', ['getUsers']);
+
+    TestBed.configureTestingModule({
+      declarations: [UserComponent],
+      providers: [
+        { provide: UserService, useValue: userServiceSpy }
+      ]
+    });
+
+    fixture = TestBed.createComponent(UserComponent);
+    component = fixture.componentInstance;
+    userService = TestBed.inject(UserService) as jasmine.SpyObj&lt;UserService&gt;;
+    compiled = fixture.nativeElement;
+  });
+
+  // Test component creation
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+
+  // Test initial title
+  it('should have correct initial title', () => {
+    expect(component.title).toBe('User Management');
+  });
+
+  // Test title rendering
+  it('should render title in h1 tag', () => {
+    fixture.detectChanges();
+    const h1 = compiled.querySelector('h1');
+    expect(h1?.textContent).toBe('User Management');
+  });
+
+  // Test service method call
+  it('should call userService.getUsers when loadUsers is called', () => {
+    const mockUsers = [{ id: 1, name: 'John' }, { id: 2, name: 'Jane' }];
+    userService.getUsers.and.returnValue(of(mockUsers));
+
+    component.loadUsers();
+
+    expect(userService.getUsers).toHaveBeenCalled();
+    expect(component.users).toEqual(mockUsers);
+  });
+
+  // Test button click
+  it('should load users when button is clicked', () => {
+    const mockUsers = [{ id: 1, name: 'John' }];
+    userService.getUsers.and.returnValue(of(mockUsers));
+    
+    const button = compiled.querySelector('button');
+    button?.click();
+
+    expect(userService.getUsers).toHaveBeenCalled();
+  });
+});
+                        </pre>
+                    </div>
+                </div>
+
+                <!-- Best Practices -->
+                <div class="section">
+                    <h2>✨ Best Practices</h2>
+                    
+                    <div class="best-practices">
+                        <h3>Writing Effective Tests</h3>
+                        <ul>
+                            <li><strong>Keep tests simple and focused:</strong> One test should verify one specific behavior</li>
+                            <li><strong>Use descriptive test names:</strong> Test names should clearly explain what is being tested</li>
+                            <li><strong>Follow AAA pattern:</strong> Arrange (setup), Act (execute), Assert (verify)</li>
+                            <li><strong>Mock external dependencies:</strong> Isolate the unit under test from its dependencies</li>
+                            <li><strong>Test behavior, not implementation:</strong> Focus on what the component does, not how it does it</li>
+                            <li><strong>Keep tests independent:</strong> Tests should not depend on the order they run in</li>
+                            <li><strong>Aim for good coverage:</strong> Strive for high test coverage but focus on critical paths</li>
+                            <li><strong>Test error conditions:</strong> Don't just test the happy path, test edge cases too</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Testing Commands -->
+                <div class="section">
+                    <h2>⚡ Quick Reference Commands</h2>
+                    
+                    <div class="code-block">
+                        <pre>
+# Run all tests
+ng test
+
+# Run tests with code coverage report
+ng test --code-coverage
+
+# Run tests in headless browser (CI/CD)
+ng test --browsers=ChromeHeadless --watch=false
+
+# Run specific test file
+ng test --include="**/user.component.spec.ts"
+
+# Run tests and generate coverage in different formats
+ng test --code-coverage --coverage-reporters=html,lcov
+
+# Debug tests in browser
+ng test --source-map=true
+                        </pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer">
+                <h3>🎉 Start Testing Today!</h3>
+                <p>Unit testing is an investment in code quality and developer confidence. Begin with simple tests and gradually build comprehensive test suites for your Angular applications.</p>
+                <p><strong>Remember:</strong> Good tests make better code, and better code makes happier developers! 🚀</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
