@@ -30,11 +30,25 @@
       </app-document-viewer>
     </div>
 
+    <!-- Excel Viewer Demo -->
+    <div class="viewer-demo">
+      <h3>Excel Viewer (Multi-Sheet Support)</h3>
+      <app-document-viewer
+        [src]="sampleExcelBlob"
+        fileName="sample-data.xlsx"
+        fileType="excel"
+        height="500px"
+        [showToolbar]="true"
+        [startPage]="1"
+        (loadError)="onDocumentLoadError($event)">
+      </app-document-viewer>
+    </div>
+
     <!-- Office Document Demo -->
     <div class="viewer-demo">
       <h3>Office Document (Download Only)</h3>
       <app-document-viewer
-        src="https://example.com/sample-document.docx"
+        src="https://calibre-ebook.com/downloads/demos/demo.docx"
         fileName="sample-document.docx"
         fileType="word"
         height="300px"

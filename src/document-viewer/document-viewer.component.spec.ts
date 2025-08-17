@@ -137,5 +137,45 @@ describe('DocumentViewerComponent', () => {
     
     component.fileType = 'image';
     expect(component.canNavigate()).toBe(false);
+    
+    component.fileType = 'excel';
+    component.excelSheets = ['Sheet1'];
+    expect(component.canNavigate()).toBe(false);
+    
+    component.excelSheets = ['Sheet1', 'Sheet2', 'Sheet3'];
+    expect(component.canNavigate()).toBe(true);
+  });
+
+  it('should handle Excel sheet navigation', () => {
+    component.fileType = 'excel';
+    component.excelSheets = ['Sales', 'Employees', 'Financial'];
+    component.totalPages = 3;
+    
+    component.goToSheet('Employees');
+    expect(component.currentSheet).toBe('Employees');
+    expect(component.currentPage).toBe(2);
+    
+    component.goToSheet('Financial');
+    expect(component.currentSheet).toBe('Financial');
+    expect(component.currentPage).toBe(3);
+  });
+
+  it('should check if document is Excel correctly', () => {
+    component.fileType = 'excel';
+    expect(component.isExcel()).toBe(true);
+    
+    component.fileType = 'pdf';
+    expect(component.isExcel()).toBe(false);
+    
+    component.fileType = 'image';
+    expect(component.isExcel()).toBe(false);
+  });
+
+  it('should return current sheet name', () => {
+    component.currentSheet = 'TestSheet';
+    expect(component.getCurrentSheetName()).toBe('TestSheet');
+    
+    component.currentSheet = '';
+    expect(component.getCurrentSheetName()).toBe('');
   });
 });

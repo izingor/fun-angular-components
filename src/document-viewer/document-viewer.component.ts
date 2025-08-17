@@ -5,7 +5,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatInputModule } from '@angular/material/input';
+import { MatTableModule } from '@angular/material/table';
+import { MatSelectModule } from '@angular/material/select';
 import { FormsModule } from '@angular/forms';
+import * as XLSX from 'xlsx';
 
 export type FileType = 'image' | 'pdf' | 'word' | 'excel';
 
@@ -25,6 +28,8 @@ declare global {
     MatToolbarModule,
     MatTooltipModule,
     MatInputModule,
+    MatTableModule,
+    MatSelectModule,
     FormsModule
   ],
   templateUrl: './document-viewer.component.html',
@@ -58,6 +63,13 @@ export class DocumentViewerComponent implements OnInit, OnDestroy {
   private renderTask: any = null;
   private pdfJsLoaded: boolean = false;
 
+  // Excel specific
+  excelWorkbook: any = null;
+  excelSheets: string[] = [];
+  currentSheet: string = '';
+  excelData: any[][] = [];
+  displayedColumns: string[] = [];
+
   constructor(private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
@@ -80,10 +92,16 @@ export class DocumentViewerComponent implements OnInit, OnDestroy {
     if (this.documentUrl && this.documentUrl.startsWith('blob:')) {
       URL.revokeObjectURL(this.documentUrl);
     }
+    // Clean up Excel data
+    this.excelWorkbook = null;
+    this.excelSheets = [];
+    this.excelData = [];
+    this.displayedColumns = [];
   }
 
   private async loadPdfJs(): Promise<void> {
     if (this.pdfJsLoaded || window.pdfjsLib) {
+      this.pdfJsLoaded = true;
       return;
     }
 
@@ -92,20 +110,16 @@ export class DocumentViewerComponent implements OnInit, OnDestroy {
       const script = document.createElement('script');
       script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
       script.onload = () => {
-        // Load PDF.js worker
-        const workerScript = document.createElement('script');
-        workerScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-        workerScript.onload = () => {
-          if (window.pdfjsLib) {
-            window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-            this.pdfJsLoaded = true;
-            resolve();
-          } else {
-            reject(new Error('PDF.js failed to load'));
-          }
-        };
-        workerScript.onerror = () => reject(new Error('PDF.js worker failed to load'));
-        document.head.appendChild(workerScript);
+        if (window.pdfjsLib) {
+          // Set worker source
+          window.pdfjsLib.GlobalWorkerOptions.workerSrc = 
+            'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+          this.pdfJsLoaded = true;
+          console.log('PDF.js loaded successfully');
+          resolve();
+        } else {
+          reject(new Error('PDF.js failed to load'));
+        }
       };
       script.onerror = () => reject(new Error('PDF.js library failed to load'));
       document.head.appendChild(script);
@@ -135,8 +149,10 @@ export class DocumentViewerComponent implements OnInit, OnDestroy {
         case 'image':
           this.loadImage();
           break;
-        case 'word':
         case 'excel':
+          await this.loadExcel();
+          break;
+        case 'word':
           this.loadOfficeDocument();
           break;
         default:
@@ -176,19 +192,35 @@ export class DocumentViewerComponent implements OnInit, OnDestroy {
 
   private async loadPdf() {
     try {
+      console.log('Loading PDF.js library...');
       await this.loadPdfJs();
-      const loadingTask = window.pdfjsLib.getDocument(this.documentUrl);
+      
+      console.log('Loading PDF document from:', this.documentUrl);
+      const loadingTask = window.pdfjsLib.getDocument({
+        url: this.documentUrl,
+        cMapUrl: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/cmaps/',
+        cMapPacked: true
+      });
+      
       this.pdfDocument = await loadingTask.promise;
       this.totalPages = this.pdfDocument.numPages;
       this.currentPage = Math.min(this.startPage, this.totalPages);
-      await this.renderPdfPage();
+      
+      console.log(`PDF loaded successfully. Pages: ${this.totalPages}`);
+      
+      // Wait for next tick to ensure canvas is ready
+      setTimeout(() => {
+        this.renderPdfPage();
+      }, 100);
+      
     } catch (error) {
+      console.error('PDF loading error:', error);
       this.loadError.emit(`Failed to load PDF: ${error}`);
     }
   }
 
   private async renderPdfPage() {
-    if (!this.pdfDocument || !this.canvasRef) return;
+    if (!this.pdfDocument || !this.canvasRef?.nativeElement) return;
 
     try {
       // Cancel previous render task
@@ -199,6 +231,10 @@ export class DocumentViewerComponent implements OnInit, OnDestroy {
       const page = await this.pdfDocument.getPage(this.currentPage);
       const canvas = this.canvasRef.nativeElement;
       const context = canvas.getContext('2d');
+
+      if (!context) {
+        throw new Error('Could not get canvas context');
+      }
 
       // Calculate scale based on container width
       const containerWidth = canvas.parentElement?.clientWidth || 800;
@@ -236,12 +272,99 @@ export class DocumentViewerComponent implements OnInit, OnDestroy {
     this.currentPage = 1;
   }
 
+  private async loadExcel() {
+    try {
+      let arrayBuffer: ArrayBuffer;
+      
+      if (this.src instanceof Blob) {
+        arrayBuffer = await this.src.arrayBuffer();
+      } else {
+        // Fetch from URL
+        const response = await fetch(this.documentUrl);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        arrayBuffer = await response.arrayBuffer();
+      }
+
+      // Parse the Excel file
+      this.excelWorkbook = XLSX.read(arrayBuffer, { type: 'array' });
+      this.excelSheets = this.excelWorkbook.SheetNames;
+      this.totalPages = this.excelSheets.length;
+      
+      if (this.excelSheets.length > 0) {
+        this.currentSheet = this.excelSheets[Math.min(this.startPage - 1, this.excelSheets.length - 1)];
+        this.currentPage = Math.min(this.startPage, this.totalPages);
+        this.loadExcelSheet(this.currentSheet);
+      }
+    } catch (error) {
+      this.loadError.emit(`Failed to load Excel file: ${error}`);
+    }
+  }
+
+  private loadExcelSheet(sheetName: string) {
+    if (!this.excelWorkbook || !sheetName) return;
+
+    try {
+      const worksheet = this.excelWorkbook.Sheets[sheetName];
+      if (!worksheet) {
+        this.loadError.emit(`Sheet "${sheetName}" not found`);
+        return;
+      }
+
+      // Convert sheet to JSON array
+      const jsonData = XLSX.utils.sheet_to_json(worksheet, { 
+        header: 1, 
+        defval: '', 
+        raw: false 
+      }) as any[][];
+
+      if (jsonData.length === 0) {
+        this.excelData = [];
+        this.displayedColumns = [];
+        return;
+      }
+
+      // Use first row as headers if it contains strings, otherwise generate column names
+      const firstRow = jsonData[0] || [];
+      const hasHeaders = firstRow.some(cell => typeof cell === 'string' && cell.trim() !== '');
+      
+      if (hasHeaders && firstRow.every(cell => typeof cell === 'string' || cell === '')) {
+        // First row contains headers
+        this.displayedColumns = firstRow.map((header, index) => 
+          header ? header.toString() : `Column ${index + 1}`
+        );
+        this.excelData = jsonData.slice(1);
+      } else {
+        // Generate column headers
+        const maxCols = Math.max(...jsonData.map(row => row.length));
+        this.displayedColumns = Array.from({ length: maxCols }, (_, i) => `Column ${i + 1}`);
+        this.excelData = jsonData;
+      }
+
+      // Ensure all rows have the same number of columns
+      this.excelData = this.excelData.map(row => {
+        const newRow = [...row];
+        while (newRow.length < this.displayedColumns.length) {
+          newRow.push('');
+        }
+        return newRow.slice(0, this.displayedColumns.length);
+      });
+
+    } catch (error) {
+      this.loadError.emit(`Failed to process Excel sheet: ${error}`);
+    }
+  }
+
   // Navigation methods
   goToPage(page: number) {
     if (page >= 1 && page <= this.totalPages) {
       this.currentPage = page;
       if (this.fileType === 'pdf') {
         this.renderPdfPage();
+      } else if (this.fileType === 'excel' && this.excelSheets.length > 0) {
+        this.currentSheet = this.excelSheets[page - 1];
+        this.loadExcelSheet(this.currentSheet);
       }
     }
   }
@@ -255,6 +378,16 @@ export class DocumentViewerComponent implements OnInit, OnDestroy {
   nextPage() {
     if (this.currentPage < this.totalPages) {
       this.goToPage(this.currentPage + 1);
+    }
+  }
+
+  // Excel-specific navigation
+  goToSheet(sheetName: string) {
+    const sheetIndex = this.excelSheets.indexOf(sheetName);
+    if (sheetIndex !== -1) {
+      this.currentSheet = sheetName;
+      this.currentPage = sheetIndex + 1;
+      this.loadExcelSheet(sheetName);
     }
   }
 
@@ -341,6 +474,17 @@ export class DocumentViewerComponent implements OnInit, OnDestroy {
   }
 
   canNavigate(): boolean {
-    return this.fileType === 'pdf' && this.totalPages > 1;
+    return (this.fileType === 'pdf' && this.totalPages > 1) || 
+           (this.fileType === 'excel' && this.excelSheets.length > 1);
+  }
+
+  // Helper method to get current sheet name for display
+  getCurrentSheetName(): string {
+    return this.currentSheet || '';
+  }
+
+  // Helper method to check if current document is Excel
+  isExcel(): boolean {
+    return this.fileType === 'excel';
   }
 }

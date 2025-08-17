@@ -6,16 +6,16 @@
     </div>
     
     <div class="toolbar-center">
-      <!-- Page Navigation (for PDFs) -->
+      <!-- Page Navigation (for PDFs and Excel) -->
       <div *ngIf="canNavigate()" class="page-navigation">
         <button mat-icon-button 
                 [disabled]="currentPage <= 1" 
                 (click)="previousPage()"
-                matTooltip="Previous page">
+                [matTooltip]="isExcel() ? 'Previous sheet' : 'Previous page'">
           <mat-icon>chevron_left</mat-icon>
         </button>
         
-        <div class="page-input">
+        <div class="page-input" *ngIf="!isExcel()">
           <input matInput 
                  type="number" 
                  [value]="currentPage"
@@ -25,11 +25,23 @@
                  class="page-number-input">
           <span class="page-total">/ {{ totalPages }}</span>
         </div>
+
+        <!-- Excel sheet selector -->
+        <div class="sheet-selector" *ngIf="isExcel()">
+          <mat-select [value]="currentSheet" 
+                      (selectionChange)="goToSheet($event.value)"
+                      class="sheet-select">
+            <mat-option *ngFor="let sheet of excelSheets" [value]="sheet">
+              {{ sheet }}
+            </mat-option>
+          </mat-select>
+          <span class="sheet-total">({{ currentPage }}/{{ totalPages }})</span>
+        </div>
         
         <button mat-icon-button 
                 [disabled]="currentPage >= totalPages" 
                 (click)="nextPage()"
-                matTooltip="Next page">
+                [matTooltip]="isExcel() ? 'Next sheet' : 'Next page'">
           <mat-icon>chevron_right</mat-icon>
         </button>
       </div>
@@ -90,8 +102,38 @@
            class="document-image">
     </div>
 
-    <!-- Office Document Viewer -->
-    <div *ngIf="(fileType === 'word' || fileType === 'excel') && !isLoading" class="office-container">
+    <!-- Excel Viewer -->
+    <div *ngIf="fileType === 'excel' && !isLoading" class="excel-container">
+      <div class="excel-header" *ngIf="currentSheet">
+        <h4>{{ currentSheet }}</h4>
+        <span class="data-info">{{ excelData.length }} rows, {{ displayedColumns.length }} columns</span>
+      </div>
+      
+      <div class="excel-table-container" *ngIf="excelData.length > 0">
+        <table mat-table [dataSource]="excelData" class="excel-table">
+          <!-- Dynamic columns -->
+          <ng-container *ngFor="let column of displayedColumns; let i = index" [matColumnDef]="column">
+            <th mat-header-cell *matHeaderCellDef class="excel-header-cell">
+              {{ column }}
+            </th>
+            <td mat-cell *matCellDef="let row" class="excel-data-cell">
+              {{ row[i] || '' }}
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+      </div>
+      
+      <div *ngIf="excelData.length === 0" class="excel-empty">
+        <mat-icon>table_chart</mat-icon>
+        <p>This sheet appears to be empty or contains no readable data.</p>
+      </div>
+    </div>
+
+    <!-- Office Document Viewer (Word only) -->
+    <div *ngIf="fileType === 'word' && !isLoading" class="office-container">
       <div class="office-preview">
         <mat-icon class="office-icon">description</mat-icon>
         <h3>{{ fileName }}</h3>
