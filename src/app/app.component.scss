@@ -7,7 +7,7 @@
 
 .demo-section {
   max-width: 1000px;
-  margin: 0 auto;
+  margin: 0 auto 40px auto;
   background: white;
   padding: 32px;
   border-radius: 16px;
@@ -21,21 +21,23 @@
   }
   
   h2 {
-    margin: 48px 0 24px 0;
+    margin: 0 0 24px 0;
     color: #333;
     font-weight: 500;
     font-size: 24px;
-    
-    &:first-of-type {
-      margin-top: 32px;
-    }
+    border-bottom: 2px solid #e0e0e0;
+    padding-bottom: 8px;
   }
   
   h3 {
-    margin: 0 0 12px 0;
+    margin: 32px 0 12px 0;
     color: #333;
     font-weight: 500;
-    font-size: 16px;
+    font-size: 18px;
+    
+    &:first-of-type {
+      margin-top: 0;
+    }
   }
   
   p {
@@ -46,6 +48,24 @@
     &:last-child {
       margin-bottom: 0;
     }
+  }
+}
+
+.viewer-demo {
+  margin-bottom: 40px;
+  padding: 20px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background: #fafafa;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+  
+  h3 {
+    margin-top: 0;
+    margin-bottom: 16px;
+    color: #1976d2;
   }
 }
 

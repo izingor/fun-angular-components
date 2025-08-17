@@ -1,0 +1,107 @@
+<div class="document-viewer" [style.height]="height">
+  <!-- Toolbar -->
+  <mat-toolbar *ngIf="showToolbar" class="viewer-toolbar">
+    <div class="toolbar-left">
+      <span class="file-name">{{ fileName }}</span>
+    </div>
+    
+    <div class="toolbar-center">
+      <!-- Page Navigation (for PDFs) -->
+      <div *ngIf="canNavigate()" class="page-navigation">
+        <button mat-icon-button 
+                [disabled]="currentPage <= 1" 
+                (click)="previousPage()"
+                matTooltip="Previous page">
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+        
+        <div class="page-input">
+          <input matInput 
+                 type="number" 
+                 [value]="currentPage"
+                 (change)="goToPage(+$any($event.target).value)"
+                 [min]="1" 
+                 [max]="totalPages"
+                 class="page-number-input">
+          <span class="page-total">/ {{ totalPages }}</span>
+        </div>
+        
+        <button mat-icon-button 
+                [disabled]="currentPage >= totalPages" 
+                (click)="nextPage()"
+                matTooltip="Next page">
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+      </div>
+    </div>
+    
+    <div class="toolbar-right">
+      <!-- Zoom Controls -->
+      <button mat-icon-button (click)="zoomOut()" matTooltip="Zoom out">
+        <mat-icon>zoom_out</mat-icon>
+      </button>
+      <button mat-icon-button (click)="resetZoom()" matTooltip="Reset zoom">
+        <mat-icon>center_focus_weak</mat-icon>
+      </button>
+      <button mat-icon-button (click)="zoomIn()" matTooltip="Zoom in">
+        <mat-icon>zoom_in</mat-icon>
+      </button>
+      
+      <!-- Rotation Controls -->
+      <button mat-icon-button (click)="rotateLeft()" matTooltip="Rotate left">
+        <mat-icon>rotate_left</mat-icon>
+      </button>
+      <button mat-icon-button (click)="rotateRight()" matTooltip="Rotate right">
+        <mat-icon>rotate_right</mat-icon>
+      </button>
+      
+      <!-- Action Buttons -->
+      <button mat-icon-button (click)="print()" matTooltip="Print">
+        <mat-icon>print</mat-icon>
+      </button>
+      <button mat-icon-button (click)="download()" matTooltip="Download">
+        <mat-icon>download</mat-icon>
+      </button>
+    </div>
+  </mat-toolbar>
+
+  <!-- Loading indicator -->
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="loading-spinner"></div>
+    <p>Loading document...</p>
+  </div>
+
+  <!-- Document content -->
+  <div class="document-content" [class.with-toolbar]="showToolbar">
+    
+    <!-- PDF Viewer -->
+    <div *ngIf="fileType === 'pdf' && !isLoading" class="pdf-container">
+      <canvas #canvas class="pdf-canvas"></canvas>
+    </div>
+
+    <!-- Image Viewer -->
+    <div *ngIf="fileType === 'image' && !isLoading" class="image-container">
+      <img #imageElement 
+           [src]="documentUrl" 
+           [alt]="fileName"
+           [style.transform]="getImageTransform()"
+           (load)="onImageLoad()"
+           (error)="onImageError()"
+           class="document-image">
+    </div>
+
+    <!-- Office Document Viewer -->
+    <div *ngIf="(fileType === 'word' || fileType === 'excel') && !isLoading" class="office-container">
+      <div class="office-preview">
+        <mat-icon class="office-icon">description</mat-icon>
+        <h3>{{ fileName }}</h3>
+        <p>Preview not available for this file type.</p>
+        <button mat-raised-button color="primary" (click)="download()">
+          <mat-icon>download</mat-icon>
+          Download File
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>

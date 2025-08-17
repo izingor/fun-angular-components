@@ -1,6 +1,52 @@
 <div class="container">
+  <!-- Document Viewer Demo Section -->
   <div class="demo-section">
+    <h2>Document Viewer Component Demo</h2>
+    
+    <!-- Image Viewer Demo -->
+    <div class="viewer-demo">
+      <h3>Image Viewer</h3>
+      <app-document-viewer
+        [src]="sampleImageUrl"
+        fileName="sample-image.png"
+        fileType="image"
+        height="400px"
+        [showToolbar]="true"
+        (loadError)="onDocumentLoadError($event)">
+      </app-document-viewer>
+    </div>
 
+    <!-- PDF Viewer Demo -->
+    <div class="viewer-demo">
+      <h3>PDF Viewer</h3>
+      <app-document-viewer
+        [src]="samplePdfUrl"
+        fileName="sample-document.pdf"
+        fileType="pdf"
+        height="500px"
+        [showToolbar]="true"
+        [startPage]="1"
+        (loadError)="onDocumentLoadError($event)">
+      </app-document-viewer>
+    </div>
+
+    <!-- Office Document Demo -->
+    <div class="viewer-demo">
+      <h3>Office Document (Download Only)</h3>
+      <app-document-viewer
+        src="https://example.com/sample-document.docx"
+        fileName="sample-document.docx"
+        fileType="word"
+        height="300px"
+        [showToolbar]="true"
+        (loadError)="onDocumentLoadError($event)">
+      </app-document-viewer>
+    </div>
+  </div>
+
+  <!-- Other Components Demo -->
+  <div class="demo-section">
+    <h2>Other Components</h2>
     <app-test-example></app-test-example>
   </div>
 </div>

@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Viewer Demo - Usage Examples</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 40px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .section {
+            margin-bottom: 40px;
+        }
+        .code-block {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .feature-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            background: #f9f9f9;
+        }
+        .feature-card h4 {
+            margin-top: 0;
+            color: #333;
+        }
+        .status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status.implemented {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status.partial {
+            background: #fff3cd;
+            color: #856404;
+        }
+        h1 { color: #2c3e50; }
+        h2 { color: #34495e; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
+        h3 { color: #2980b9; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🗂️ Document Viewer Component - Implementation Guide</h1>
+        
+        <div class="section">
+            <h2>✅ What's Implemented</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>File Display <span class="status implemented">✅ DONE</span></h4>
+                    <ul>
+                        <li>Images with rotation/zoom support</li>
+                        <li>PDF with full page navigation</li>
+                        <li>Office docs with download fallback</li>
+                    </ul>
+                </div>
+                
+                <div class="feature-card">
+                    <h4>Toolbar <span class="status implemented">✅ DONE</span></h4>
+                    <ul>
+                        <li>Download button</li>
+                        <li>Print button</li>
+                        <li>Rotate left/right controls</li>
+                        <li>Page navigation for PDFs</li>
+                        <li>File name display</li>
+                    </ul>
+                </div>
+                
+                <div class="feature-card">
+                    <h4>Rotation <span class="status implemented">✅ DONE</span></h4>
+                    <ul>
+                        <li>CSS transforms for images</li>
+                        <li>Canvas rotation for PDFs</li>
+                        <li>90° increments</li>
+                    </ul>
+                </div>
+                
+                <div class="feature-card">
+                    <h4>Page Navigation <span class="status implemented">✅ DONE</span></h4>
+                    <ul>
+                        <li>Next/Previous buttons</li>
+                        <li>Direct page input</li>
+                        <li>Page counter display</li>
+                    </ul>
+                </div>
+                
+                <div class="feature-card">
+                    <h4>Zoom Controls <span class="status implemented">✅ DONE</span></h4>
+                    <ul>
+                        <li>Zoom in/out buttons</li>
+                        <li>Reset zoom</li>
+                        <li>Responsive scaling</li>
+                    </ul>
+                </div>
+                
+                <div class="feature-card">
+                    <h4>Error Handling <span class="status implemented">✅ DONE</span></h4>
+                    <ul>
+                        <li>LoadError event emitter</li>
+                        <li>User-friendly error messages</li>
+                        <li>Graceful fallbacks</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🚀 Usage Examples</h2>
+            
+            <h3>Basic Image Viewer</h3>
+            <div class="code-block">
+&lt;app-document-viewer
+  src="https://example.com/image.jpg"
+  fileName="sample-image.jpg"
+  fileType="image"
+  height="400px"
+  (loadError)="onError($event)"&gt;
+&lt;/app-document-viewer&gt;
+            </div>
+
+            <h3>PDF Document Viewer</h3>
+            <div class="code-block">
+&lt;app-document-viewer
+  src="https://example.com/document.pdf"
+  fileName="report.pdf"
+  fileType="pdf"
+  height="600px"
+  [startPage]="1"
+  [showToolbar]="true"
+  (loadError)="onError($event)"&gt;
+&lt;/app-document-viewer&gt;
+            </div>
+
+            <h3>File Upload Integration</h3>
+            <div class="code-block">
+// Component
+export class MyComponent {
+  selectedFile: File | null = null;
+  
+  onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      this.selectedFile = input.files[0];
+    }
+  }
+  
+  onDocumentError(error: string) {
+    console.error('Error loading document:', error);
+  }
+}
+
+// Template
+&lt;input type="file" (change)="onFileSelected($event)" 
+       accept=".pdf,.jpg,.jpeg,.png,.gif,.bmp,.webp,.doc,.docx,.xls,.xlsx"&gt;
+
+&lt;app-document-viewer
+  *ngIf="selectedFile"
+  [src]="selectedFile"
+  [fileName]="selectedFile.name"
+  height="500px"
+  (loadError)="onDocumentError($event)"&gt;
+&lt;/app-document-viewer&gt;
+            </div>
+
+            <h3>Dynamic Document Gallery</h3>
+            <div class="code-block">
+// Component
+export class DocumentGallery {
+  documents = [
+    { name: 'Report.pdf', url: '/assets/report.pdf', type: 'pdf' },
+    { name: 'Chart.png', url: '/assets/chart.png', type: 'image' },
+    { name: 'Data.xlsx', url: '/assets/data.xlsx', type: 'excel' }
+  ];
+  
+  selectedDoc = this.documents[0];
+}
+
+// Template
+&lt;select [(ngModel)]="selectedDoc"&gt;
+  &lt;option *ngFor="let doc of documents" [ngValue]="doc"&gt;
+    {{ doc.name }}
+  &lt;/option&gt;
+&lt;/select&gt;
+
+&lt;app-document-viewer
+  [src]="selectedDoc.url"
+  [fileName]="selectedDoc.name"
+  [fileType]="selectedDoc.type"
+  height="600px"&gt;
+&lt;/app-document-viewer&gt;
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📋 API Reference</h2>
+            
+            <h3>Inputs (@Input())</h3>
+            <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+                <thead>
+                    <tr style="background: #f8f9fa;">
+                        <th style="border: 1px solid #ddd; padding: 12px; text-align: left;">Property</th>
+                        <th style="border: 1px solid #ddd; padding: 12px; text-align: left;">Type</th>
+                        <th style="border: 1px solid #ddd; padding: 12px; text-align: left;">Default</th>
+                        <th style="border: 1px solid #ddd; padding: 12px; text-align: left;">Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td style="border: 1px solid #ddd; padding: 8px;">src</td><td style="border: 1px solid #ddd; padding: 8px;">string | Blob</td><td style="border: 1px solid #ddd; padding: 8px;">Required</td><td style="border: 1px solid #ddd; padding: 8px;">Document source URL or Blob</td></tr>
+                    <tr><td style="border: 1px solid #ddd; padding: 8px;">fileName</td><td style="border: 1px solid #ddd; padding: 8px;">string</td><td style="border: 1px solid #ddd; padding: 8px;">'document'</td><td style="border: 1px solid #ddd; padding: 8px;">File name for display/download</td></tr>
+                    <tr><td style="border: 1px solid #ddd; padding: 8px;">fileType</td><td style="border: 1px solid #ddd; padding: 8px;">'image'|'pdf'|'word'|'excel'</td><td style="border: 1px solid #ddd; padding: 8px;">Auto-detect</td><td style="border: 1px solid #ddd; padding: 8px;">Document type</td></tr>
+                    <tr><td style="border: 1px solid #ddd; padding: 8px;">height</td><td style="border: 1px solid #ddd; padding: 8px;">string</td><td style="border: 1px solid #ddd; padding: 8px;">'600px'</td><td style="border: 1px solid #ddd; padding: 8px;">Component height</td></tr>
+                    <tr><td style="border: 1px solid #ddd; padding: 8px;">showToolbar</td><td style="border: 1px solid #ddd; padding: 8px;">boolean</td><td style="border: 1px solid #ddd; padding: 8px;">true</td><td style="border: 1px solid #ddd; padding: 8px;">Show/hide toolbar</td></tr>
+                    <tr><td style="border: 1px solid #ddd; padding: 8px;">readonly</td><td style="border: 1px solid #ddd; padding: 8px;">boolean</td><td style="border: 1px solid #ddd; padding: 8px;">false</td><td style="border: 1px solid #ddd; padding: 8px;">Read-only mode</td></tr>
+                    <tr><td style="border: 1px solid #ddd; padding: 8px;">startPage</td><td style="border: 1px solid #ddd; padding: 8px;">number</td><td style="border: 1px solid #ddd; padding: 8px;">1</td><td style="border: 1px solid #ddd; padding: 8px;">Starting page for PDFs</td></tr>
+                    <tr><td style="border: 1px solid #ddd; padding: 8px;">rotate</td><td style="border: 1px solid #ddd; padding: 8px;">number</td><td style="border: 1px solid #ddd; padding: 8px;">0</td><td style="border: 1px solid #ddd; padding: 8px;">Initial rotation (0,90,180,270)</td></tr>
+                </tbody>
+            </table>
+            
+            <h3>Outputs (@Output())</h3>
+            <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+                <thead>
+                    <tr style="background: #f8f9fa;">
+                        <th style="border: 1px solid #ddd; padding: 12px; text-align: left;">Event</th>
+                        <th style="border: 1px solid #ddd; padding: 12px; text-align: left;">Type</th>
+                        <th style="border: 1px solid #ddd; padding: 12px; text-align: left;">Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td style="border: 1px solid #ddd; padding: 8px;">loadError</td><td style="border: 1px solid #ddd; padding: 8px;">EventEmitter&lt;string&gt;</td><td style="border: 1px solid #ddd; padding: 8px;">Emitted when file fails to load</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>🔧 Setup Instructions</h2>
+            
+            <h3>1. Install Dependencies</h3>
+            <div class="code-block">
+npm install @angular/material @angular/cdk pdfjs-dist@3.11.174
+            </div>
+            
+            <h3>2. Import the Component</h3>
+            <div class="code-block">
+import { DocumentViewerComponent } from './document-viewer/document-viewer.component';
+
+@Component({
+  imports: [DocumentViewerComponent, ...],
+  // ...
+})
+            </div>
+            
+            <h3>3. Add to Your Template</h3>
+            <div class="code-block">
+&lt;app-document-viewer
+  [src]="yourDocumentUrl"
+  fileName="your-file.pdf"
+  height="600px"&gt;
+&lt;/app-document-viewer&gt;
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🎯 Testing</h2>
+            <p>The component includes comprehensive unit tests covering:</p>
+            <ul>
+                <li>✅ Component initialization and default values</li>
+                <li>✅ File type detection</li>
+                <li>✅ Rotation functionality</li>
+                <li>✅ Zoom controls</li>
+                <li>✅ Page navigation</li>
+                <li>✅ Error handling</li>
+                <li>✅ Transform calculations</li>
+            </ul>
+            
+            <div class="code-block">
+# Run tests
+npm run test
+
+# Run tests for specific component
+ng test --include="**/document-viewer/**"
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🚀 Ready to Use!</h2>
+            <p>Your document viewer component is fully implemented and ready for production use. It includes:</p>
+            <ul>
+                <li>✅ All required inputs and outputs from the specification</li>
+                <li>✅ Complete toolbar with all specified functionality</li>
+                <li>✅ PDF.js integration for PDF viewing</li>
+                <li>✅ Image display with rotation and zoom</li>
+                <li>✅ Office document download fallback</li>
+                <li>✅ Responsive design and mobile support</li>
+                <li>✅ Comprehensive error handling</li>
+                <li>✅ Unit tests with good coverage</li>
+                <li>✅ TypeScript types and interfaces</li>
+                <li>✅ Angular Material integration</li>
+            </ul>
+            
+            <p><strong>Next Steps:</strong></p>
+            <ol>
+                <li>Test with your actual documents</li>
+                <li>Customize styling to match your app's theme</li>
+                <li>Add any additional features you need</li>
+                <li>Deploy and enjoy! 🎉</li>
+            </ol>
+        </div>
+    </div>
+</body>
+</html>

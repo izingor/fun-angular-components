@@ -1,0 +1,236 @@
+.document-viewer {
+  display: flex;
+  flex-direction: column;
+  background: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  overflow: hidden;
+  
+  .viewer-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 16px;
+    background: white;
+    border-bottom: 1px solid #e0e0e0;
+    min-height: 64px;
+    
+    .toolbar-left {
+      flex: 1;
+      
+      .file-name {
+        font-weight: 500;
+        color: #333;
+        max-width: 200px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+    
+    .toolbar-center {
+      flex: 0 0 auto;
+      
+      .page-navigation {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        
+        .page-input {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          
+          .page-number-input {
+            width: 60px;
+            text-align: center;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 14px;
+            
+            &:focus {
+              outline: none;
+              border-color: #1976d2;
+            }
+          }
+          
+          .page-total {
+            font-size: 14px;
+            color: #666;
+          }
+        }
+      }
+    }
+    
+    .toolbar-right {
+      flex: 1;
+      display: flex;
+      justify-content: flex-end;
+      gap: 4px;
+    }
+  }
+  
+  .loading-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #1976d2;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    p {
+      color: #666;
+      margin: 0;
+    }
+  }
+  
+  .document-content {
+    flex: 1;
+    overflow: auto;
+    position: relative;
+    
+    &.with-toolbar {
+      height: calc(100% - 64px);
+    }
+    
+    .pdf-container {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 20px;
+      min-height: 100%;
+      
+      .pdf-canvas {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 4px;
+        background: white;
+        max-width: 100%;
+        height: auto;
+      }
+    }
+    
+    .image-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      min-height: 100%;
+      
+      .document-image {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 4px;
+        background: white;
+        transition: transform 0.3s ease;
+      }
+    }
+    
+    .office-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      
+      .office-preview {
+        text-align: center;
+        padding: 40px;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        
+        .office-icon {
+          font-size: 64px;
+          width: 64px;
+          height: 64px;
+          color: #1976d2;
+          margin-bottom: 16px;
+        }
+        
+        h3 {
+          margin: 0 0 8px 0;
+          color: #333;
+          font-weight: 500;
+        }
+        
+        p {
+          margin: 0 0 24px 0;
+          color: #666;
+        }
+        
+        button {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          margin: 0 auto;
+        }
+      }
+    }
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .document-viewer {
+    .viewer-toolbar {
+      flex-wrap: wrap;
+      min-height: auto;
+      
+      .toolbar-left {
+        order: 1;
+        flex: 1 1 100%;
+        margin-bottom: 8px;
+      }
+      
+      .toolbar-center {
+        order: 2;
+        flex: 1 1 auto;
+      }
+      
+      .toolbar-right {
+        order: 3;
+        flex: 1 1 auto;
+        justify-content: flex-end;
+      }
+    }
+    
+    .document-content {
+      padding: 10px;
+      
+      .pdf-container,
+      .image-container {
+        padding: 10px;
+      }
+    }
+  }
+}
+
+// Print styles
+@media print {
+  .document-viewer {
+    .viewer-toolbar {
+      display: none;
+    }
+    
+    .document-content {
+      height: auto !important;
+      overflow: visible;
+    }
+  }
+}
