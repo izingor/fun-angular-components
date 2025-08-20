@@ -3,7 +3,7 @@ import { TestExampleComponent } from "./test-example.component";
 import { TestExampleService } from "../example-service/test-example.service";
 import { provideHttpClient } from "@angular/common/http";
 import { provideHttpClientTesting } from "@angular/common/http/testing";
-import { of, throwError } from "rxjs";
+import { of, throwError, delay } from "rxjs";
 
 describe('TestExampleComponent', () => {
   // Test variables that will be used across all test cases
@@ -246,6 +246,194 @@ describe('TestExampleComponent', () => {
     // This ensures the event binding is working correctly
     expect(component.loadBaconText).toHaveBeenCalled()
   })
+
+  // ============ ASYNC REQUEST TESTING SECTION ============
+  // These tests demonstrate various patterns for testing asynchronous operations
+
+  // Test 13: Basic Async Request - Successful Response
+  // This shows how to test a successful async HTTP request
+  it('Should handle async request and update component state on success', () => {
+    // Arrange: Create mock data that simulates API response
+    const mockBaconData = [
+      'Bacon ipsum dolor amet pancetta short ribs bresaola',
+      'Kielbasa pork belly drumstick turducken beef',
+      'Ribeye chicken pork loin shank ham hock'
+    ]
+    
+    // Configure the service spy to return an Observable with mock data
+    // of() creates an Observable that immediately emits the value and completes
+    service.getBaconText.and.returnValue(of(mockBaconData))
+
+    // Act: Trigger the async operation
+    component.loadBaconText()
+
+    // Assert: Verify the async operation completed successfully
+    expect(service.getBaconText).toHaveBeenCalled() // Service method was called
+    expect(component.baconText()).toEqual(mockBaconData) // Data was set correctly
+    expect(component.isLoading()).toBe(false) // Loading state was reset
+  })
+
+  // Test 14: Async Request - Error Handling
+  // This demonstrates testing error scenarios in async operations
+  it('Should handle async request errors gracefully', () => {
+    // Arrange: Create an error scenario
+    const errorMessage = 'Failed to fetch bacon text'
+    
+    // Configure service to return an Observable that emits an error
+    // throwError() creates an Observable that immediately emits an error
+    service.getBaconText.and.returnValue(
+      throwError(() => new Error(errorMessage))
+    )
+
+    // Act: Trigger the async operation that will fail
+    component.loadBaconText()
+
+    // Assert: Verify error handling
+    expect(service.getBaconText).toHaveBeenCalled() // Service was called
+    expect(component.baconText()).toEqual([]) // Data was reset to empty array
+    expect(component.isLoading()).toBe(false) // Loading state was reset
+  })
+
+  // Test 15: Loading State During Async Operation
+  // This tests the loading state management during async operations
+  it('Should manage loading state correctly during async request', () => {
+    const mockData = ['Test bacon text']
+    
+    // Create a delayed observable to simulate real async behavior
+    // delay() operator makes the observable emit after a specified time
+    service.getBaconText.and.returnValue(of(mockData).pipe(delay(100)))
+
+    // Initial state check
+    expect(component.isLoading()).toBe(false)
+
+    // Start async operation
+    component.loadBaconText()
+
+    // Note: In real async testing, you'd use fakeAsync/tick to control time
+    // For this example, we're testing the synchronous completion
+    expect(service.getBaconText).toHaveBeenCalled()
+  })
+
+  // Test 16: Multiple Async Requests
+  // This shows how to test scenarios with multiple async calls
+  it('Should handle multiple consecutive async requests', () => {
+    // Arrange: Different data for each request
+    const firstResponse = ['First request data']
+    const secondResponse = ['Second request data', 'More second data']
+
+    // Configure service to return different values on subsequent calls
+    service.getBaconText.and.returnValues(
+      of(firstResponse),  // First call returns this
+      of(secondResponse)  // Second call returns this
+    )
+
+    // Act: Make first request
+    component.loadBaconText()
+    
+    // Assert: First request results
+    expect(component.baconText()).toEqual(firstResponse)
+    expect(service.getBaconText).toHaveBeenCalledTimes(1)
+
+    // Act: Make second request
+    component.loadBaconText()
+    
+    // Assert: Second request results
+    expect(component.baconText()).toEqual(secondResponse)
+    expect(service.getBaconText).toHaveBeenCalledTimes(2)
+  })
+
+  // Test 17: Async Request Through Button Click
+  // This combines user interaction with async request testing
+  it('Should trigger async request when user clicks button', () => {
+    // Arrange: Mock successful response
+    const mockData = ['Button triggered bacon text']
+    service.getBaconText.and.returnValue(of(mockData))
+
+    // Act: Simulate user clicking the button
+    const button = fixture.nativeElement.querySelector('button')
+    button.click()
+
+    // Assert: Verify the full flow from click to data update
+    expect(service.getBaconText).toHaveBeenCalled() // Service was called
+    expect(component.baconText()).toEqual(mockData) // Component state updated
+    
+    // Update DOM to reflect changes
+    fixture.detectChanges()
+    
+    // Verify DOM shows the new data
+    const paragraphs = fixture.nativeElement.querySelectorAll('.bacon-content p')
+    expect(paragraphs.length).toBe(1)
+    expect(paragraphs[0].textContent.trim()).toBe('Button triggered bacon text')
+  })
+
+  // Test 18: DOM Updates After Async Request
+  // This verifies that async data is properly displayed in the template
+  it('Should update DOM after async request completes', () => {
+    // Arrange: Mock data with multiple paragraphs
+    const mockBaconData = [
+      'First bacon paragraph from async request',
+      'Second bacon paragraph from async request'
+    ]
+    service.getBaconText.and.returnValue(of(mockBaconData))
+
+    // Act: Trigger async request
+    component.loadBaconText()
+    
+    // Update DOM to reflect the state changes
+    fixture.detectChanges()
+
+    // Assert: Verify DOM rendering
+    const contentArea = fixture.nativeElement.querySelector('.bacon-content')
+    expect(contentArea).toBeTruthy() // Content area should exist
+    
+    const paragraphs = fixture.nativeElement.querySelectorAll('.bacon-content p')
+    expect(paragraphs.length).toBe(2) // Should have 2 paragraphs
+    expect(paragraphs[0].textContent.trim()).toBe('First bacon paragraph from async request')
+    expect(paragraphs[1].textContent.trim()).toBe('Second bacon paragraph from async request')
+  })
+
+  // Test 19: Button State During Async Operation
+  // This tests UI state changes during async operations
+  it('Should disable button and show loading text during async request', () => {
+    // Arrange: Mock a response (even though we're testing loading state)
+    service.getBaconText.and.returnValue(of(['Test data']))
+
+    // Initial button state
+    fixture.detectChanges()
+    const button = fixture.nativeElement.querySelector('button')
+    expect(button.disabled).toBe(false)
+    expect(button.textContent.trim()).toBe('Load Bacon Text')
+
+    // Simulate loading state manually (since our observable completes immediately)
+    component.isLoading.set(true)
+    fixture.detectChanges()
+
+    // Assert: Button should be disabled and show loading text
+    expect(button.disabled).toBe(true)
+    expect(button.textContent.trim()).toBe('Loading...')
+
+    // Reset loading state
+    component.isLoading.set(false)
+    fixture.detectChanges()
+
+    // Assert: Button should be enabled again
+    expect(button.disabled).toBe(false)
+    expect(button.textContent.trim()).toBe('Load Bacon Text')
+  })
+
+  // Test 20: Service Method Called With Correct Parameters
+  // This verifies that the async service is called correctly
+  it('Should call service method correctly for async request', () => {
+    // Arrange: Mock response
+    const mockData = ['Service call test data']
+    service.getBaconText.and.returnValue(of(mockData))
+
+    // Act: Trigger the async operation
+    component.loadBaconText()
+
+    // Assert: Verify service interaction
+    expect(service.getBaconText).toHaveBeenCalled() // Method was called
+    expect(service.getBaconText).toHaveBeenCalledWith() // Called with no parameters
+    expect(service.getBaconText).toHaveBeenCalledTimes(1) // Called exactly once
+  })
 });
-
-

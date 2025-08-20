@@ -475,6 +475,296 @@ expect(compiled.textContent).toContain('New Title');
                                 </pre>
                             </div>
                         </div>
+
+                        <div class="function-card">
+                            <div class="function-name">jasmine.SpyObj&lt;T&gt;</div>
+                            <p><strong>Purpose:</strong> TypeScript type for objects created with jasmine.createSpyObj(). Provides type safety for spy objects.</p>
+                            <p><strong>Usage:</strong> Ensures your spy objects have proper typing and autocomplete support.</p>
+                            <div class="code-block">
+                                <pre>
+let service: jasmine.SpyObj&lt;UserService&gt;;
+// Now 'service' has full type safety and intellisense
+service.getUsers.and.returnValue(of(mockData));
+                                </pre>
+                            </div>
+                        </div>
+
+                        <div class="function-card">
+                            <div class="function-name">jasmine.createSpyObj()</div>
+                            <p><strong>Purpose:</strong> Creates a mock object with multiple spy methods. Replaces entire service/class instances.</p>
+                            <p><strong>Usage:</strong> Mock complex dependencies with multiple methods that need to be controlled.</p>
+                            <div class="code-block">
+                                <pre>
+const serviceSpy = jasmine.createSpyObj('UserService', 
+  ['getUsers', 'updateUser', 'deleteUser']);
+  
+// Each method is now a spy that can be configured
+serviceSpy.getUsers.and.returnValue(of(mockUsers));
+                                </pre>
+                            </div>
+                        </div>
+
+                        <div class="function-card">
+                            <div class="function-name">TestBed.configureTestingModule()</div>
+                            <p><strong>Purpose:</strong> Configures a testing module for Angular components, similar to @NgModule but for tests.</p>
+                            <p><strong>Usage:</strong> Set up the testing environment with imports, providers, and declarations needed for your test.</p>
+                            <div class="code-block">
+                                <pre>
+await TestBed.configureTestingModule({
+  imports: [ComponentToTest],        // Standalone components
+  declarations: [ComponentToTest],   // Traditional components
+  providers: [                       // Services and dependencies
+    { provide: UserService, useValue: mockService }
+  ]
+}).compileComponents();
+                                </pre>
+                            </div>
+                        </div>
+
+                        <div class="function-card">
+                            <div class="function-name">TestBed.createComponent()</div>
+                            <p><strong>Purpose:</strong> Creates a ComponentFixture that wraps your component for testing.</p>
+                            <p><strong>Usage:</strong> Get access to component instance, DOM elements, and testing utilities.</p>
+                            <div class="code-block">
+                                <pre>
+const fixture = TestBed.createComponent(UserComponent);
+const component = fixture.componentInstance;  // Component instance
+const element = fixture.nativeElement;        // DOM element
+const debugElement = fixture.debugElement;    // Debug utilities
+                                </pre>
+                            </div>
+                        </div>
+
+                        <div class="function-card">
+                            <div class="function-name">TestBed.inject()</div>
+                            <p><strong>Purpose:</strong> Retrieves a service or dependency from the testing module's injector.</p>
+                            <p><strong>Usage:</strong> Get access to services that were configured in the testing module.</p>
+                            <div class="code-block">
+                                <pre>
+// Get the mocked service to control its behavior
+const userService = TestBed.inject(UserService) as jasmine.SpyObj&lt;UserService&gt;;
+
+// Configure the spy's behavior
+userService.getUsers.and.returnValue(of(mockData));
+                                </pre>
+                            </div>
+                        </div>
+
+                        <div class="function-card">
+                            <div class="function-name">ComponentFixture&lt;T&gt;</div>
+                            <p><strong>Purpose:</strong> A wrapper around a component instance that provides testing utilities and access to the component's DOM.</p>
+                            <p><strong>Usage:</strong> Bridge between your component and the testing environment.</p>
+                            <div class="code-block">
+                                <pre>
+let fixture: ComponentFixture&lt;UserComponent&gt;;
+
+fixture.componentInstance;   // Access component properties/methods
+fixture.nativeElement;       // Access raw DOM element
+fixture.debugElement;        // Access Angular debug utilities
+fixture.detectChanges();     // Trigger change detection
+fixture.destroy();           // Clean up component
+                                </pre>
+                            </div>
+                        </div>
+
+                        <div class="function-card">
+                            <div class="function-name">provideHttpClient()</div>
+                            <p><strong>Purpose:</strong> Provides the HTTP client for dependency injection in standalone applications/tests.</p>
+                            <p><strong>Usage:</strong> Enable HTTP functionality in your components during testing.</p>
+                            <div class="code-block">
+                                <pre>
+// In testing module providers
+providers: [
+  provideHttpClient(),           // Enable HTTP client
+  provideHttpClientTesting(),    // Enable HTTP testing utilities
+  // ... other providers
+]
+                                </pre>
+                            </div>
+                        </div>
+
+                        <div class="function-card">
+                            <div class="function-name">provideHttpClientTesting()</div>
+                            <p><strong>Purpose:</strong> Provides HTTP testing utilities like HttpTestingController for mocking HTTP requests.</p>
+                            <p><strong>Usage:</strong> Test HTTP calls without making real network requests.</p>
+                            <div class="code-block">
+                                <pre>
+// Enables HttpTestingController for intercepting HTTP calls
+const httpMock = TestBed.inject(HttpTestingController);
+
+// Mock an HTTP request
+const req = httpMock.expectOne('/api/users');
+req.flush(mockData);  // Provide mock response
+                                </pre>
+                            </div>
+                        </div>
+
+                        <div class="function-card">
+                            <div class="function-name">of() from RxJS</div>
+                            <p><strong>Purpose:</strong> Creates an Observable that immediately emits the provided values and completes.</p>
+                            <p><strong>Usage:</strong> Mock service methods that return Observables in tests.</p>
+                            <div class="code-block">
+                                <pre>
+import { of } from 'rxjs';
+
+// Mock a service method to return test data
+service.getUsers.and.returnValue(of(mockUsers));
+
+// The observable will immediately emit mockUsers
+                                </pre>
+                            </div>
+                        </div>
+
+                        <div class="function-card">
+                            <div class="function-name">throwError() from RxJS</div>
+                            <p><strong>Purpose:</strong> Creates an Observable that immediately emits an error.</p>
+                            <p><strong>Usage:</strong> Test error handling scenarios in your components.</p>
+                            <div class="code-block">
+                                <pre>
+import { throwError } from 'rxjs';
+
+// Mock a service method to throw an error
+service.getUsers.and.returnValue(
+  throwError(() => new Error('Network error'))
+);
+
+// Test how your component handles the error
+                                </pre>
+                            </div>
+                        </div>
+
+                        <div class="function-card">
+                            <div class="function-name">querySelector() / querySelectorAll()</div>
+                            <p><strong>Purpose:</strong> Standard DOM methods to find elements in the component's template.</p>
+                            <p><strong>Usage:</strong> Access DOM elements to verify rendering and user interactions.</p>
+                            <div class="code-block">
+                                <pre>
+// Find single element
+const button = fixture.nativeElement.querySelector('button');
+const title = fixture.nativeElement.querySelector('h1');
+
+// Find multiple elements
+const listItems = fixture.nativeElement.querySelectorAll('li');
+const paragraphs = fixture.nativeElement.querySelectorAll('p');
+                                </pre>
+                            </div>
+                        </div>
+
+                        <div class="function-card">
+                            <div class="function-name">and.returnValue()</div>
+                            <p><strong>Purpose:</strong> Configures a spy to return a specific value when called.</p>
+                            <p><strong>Usage:</strong> Control what mocked methods return to test different scenarios.</p>
+                            <div class="code-block">
+                                <pre>
+// Make spy return specific value
+spy.getUsers.and.returnValue(of(mockUsers));
+
+// Make spy return different values on subsequent calls
+spy.getUser.and.returnValues(
+  of(user1),  // First call returns user1
+  of(user2)   // Second call returns user2
+);
+                                </pre>
+                            </div>
+                        </div>
+
+                        <div class="function-card">
+                            <div class="function-name">signal.set() / signal()</div>
+                            <p><strong>Purpose:</strong> Angular signals for reactive state management. set() updates the value, () reads it.</p>
+                            <p><strong>Usage:</strong> Test components that use Angular's new signal-based state management.</p>
+                            <div class="code-block">
+                                <pre>
+// In component
+isLoading = signal(false);
+users = signal&lt;User[]&gt;([]);
+
+// In test - update signal value
+component.isLoading.set(true);
+
+// In test - read signal value
+expect(component.isLoading()).toBe(true);
+expect(component.users()).toEqual(mockUsers);
+                                </pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Angular Testing Utilities -->
+                <div class="section">
+                    <h2>🔬 Angular Testing Utilities</h2>
+                    <p>Angular provides specialized testing utilities that make testing components easier and more powerful:</p>
+                    
+                    <div class="function-grid">
+                        <div class="function-card">
+                            <div class="function-name">By.css()</div>
+                            <p><strong>Purpose:</strong> Query elements using CSS selectors through Angular's debug utilities.</p>
+                            <p><strong>Usage:</strong> More Angular-aware alternative to querySelector with better debugging info.</p>
+                            <div class="code-block">
+                                <pre>
+import { By } from '@angular/platform-browser';
+
+// Find elements using CSS selectors
+const button = fixture.debugElement.query(By.css('button'));
+const allButtons = fixture.debugElement.queryAll(By.css('button'));
+
+// Access the native element
+const nativeButton = button.nativeElement;
+                                </pre>
+                            </div>
+                        </div>
+
+                        <div class="function-card">
+                            <div class="function-name">By.directive()</div>
+                            <p><strong>Purpose:</strong> Query elements by Angular directive or component type.</p>
+                            <p><strong>Usage:</strong> Find child components or elements with specific directives.</p>
+                            <div class="code-block">
+                                <pre>
+// Find child components
+const childComponent = fixture.debugElement
+  .query(By.directive(ChildComponent));
+
+// Find elements with specific directive
+const elementsWithDirective = fixture.debugElement
+  .queryAll(By.directive(MyDirective));
+                                </pre>
+                            </div>
+                        </div>
+
+                        <div class="function-card">
+                            <div class="function-name">DebugElement</div>
+                            <p><strong>Purpose:</strong> Angular's wrapper around DOM elements that provides additional testing utilities.</p>
+                            <p><strong>Usage:</strong> Access component hierarchy, trigger events, and get debug information.</p>
+                            <div class="code-block">
+                                <pre>
+const debugElement = fixture.debugElement;
+
+debugElement.nativeElement;     // Access raw DOM element
+debugElement.componentInstance; // Access component instance
+debugElement.children;          // Get child debug elements
+debugElement.triggerEventHandler('click', null); // Trigger events
+                                </pre>
+                            </div>
+                        </div>
+
+                        <div class="function-card">
+                            <div class="function-name">fakeAsync() & tick()</div>
+                            <p><strong>Purpose:</strong> Control asynchronous operations in tests by making them synchronous.</p>
+                            <p><strong>Usage:</strong> Test setTimeout, setInterval, and async operations predictably.</p>
+                            <div class="code-block">
+                                <pre>
+import { fakeAsync, tick } from '@angular/core/testing';
+
+it('should handle async operations', fakeAsync(() => {
+  component.delayedOperation(); // Triggers setTimeout(fn, 1000)
+  
+  tick(1000); // Fast-forward time by 1000ms
+  
+  expect(component.operationComplete).toBe(true);
+}));
+                                </pre>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
