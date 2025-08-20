@@ -497,4 +497,92 @@ describe('TestExampleComponent', () => {
     expect(component.isLoading()).toBe(false) // Loading state reset to false
     expect(component.baconText()).toEqual([]) // Data reset to empty array
   })
+
+  // Test 23: Complete Async Flow - DOM Updates After Data Arrives
+  // This test demonstrates the complete lifecycle of an async request with DOM verification
+  it('Should update DOM after fetched data arrives', () => {
+    // ============ ARRANGE PHASE ============
+    // Set up test data and controlled observable for precise timing control
+    
+    // Create a Subject to manually control when the observable emits
+    // Subject gives us complete control over the timing of the async operation
+    const dataSubject = new Subject<string[]>()
+    
+    // Define mock data that simulates what the API would return
+    const mockData = ['Mock data', 'more data']
+    
+    // Get reference to the button element for potential user interaction testing
+    const button = fixture.nativeElement.querySelector('button')
+
+    // Configure the service spy to return our controlled Subject as an Observable
+    // This allows us to control exactly when the "async request" completes
+    service.getBaconText.and.returnValue(dataSubject.asObservable())
+
+    // ============ INITIAL STATE VERIFICATION ============
+    // Verify the component starts in the expected clean state
+    
+    // Component should not be loading initially
+    expect(component.isLoading()).toBe(false)
+    
+    // Component should have no data initially (empty array)
+    expect(component.baconText()).toEqual([])
+    
+
+    // ============ ACT PHASE - START ASYNC REQUEST ============
+    // Trigger the async operation and verify immediate state changes
+    
+    // Start the async request by calling the component method directly
+    // This simulates what happens when the user clicks the button
+    component.loadBaconText()
+
+    // ============ DURING REQUEST STATE VERIFICATION ============
+    // Check that the component properly manages loading state during the request
+    
+    // Loading state should be true while request is in progress
+    expect(component.isLoading()).toBe(true)
+    
+    // Data should still be empty while request is pending
+    expect(component.baconText()).toEqual([])
+
+    // ============ COMPLETE THE ASYNC REQUEST ============
+    // Simulate the async request completing with data
+    
+    // Emit the mock data through our controlled Subject
+    // This simulates the HTTP request returning with data
+    dataSubject.next(mockData)
+    
+    // Complete the observable to simulate the request finishing
+    // This triggers the 'complete' callback in the component's subscription
+    dataSubject.complete()
+
+    // ============ POST-REQUEST STATE VERIFICATION ============
+    // Verify that the component state is updated correctly after request completion
+    
+    // Loading should be false after request completes
+    expect(component.isLoading()).toBe(false)
+    
+    // Component should now contain the fetched data
+    expect(component.baconText()).toEqual(mockData)
+
+    // ============ DOM UPDATE AND VERIFICATION ============
+    // Test that the component state changes are reflected in the DOM
+    
+    // Trigger Angular change detection to update the DOM
+    // This is necessary because the Subject emission happens outside Angular's zone
+    fixture.detectChanges()
+    
+    // Query for all paragraph elements within the bacon-content container
+    // These paragraphs should be rendered based on the fetched data
+    const paragraphs = fixture.nativeElement.querySelectorAll('.bacon-content p')
+    
+    // Verify that the correct number of paragraphs are rendered
+    // Should match the length of our mock data array
+    expect(paragraphs.length).toBe(2)
+    
+    // Verify that each paragraph contains the correct text content
+    // This ensures the data is properly displayed in the template
+    expect(paragraphs[0].textContent.trim()).toBe(mockData[0]) // First paragraph: 'Mock data'
+    expect(paragraphs[1].textContent.trim()).toBe(mockData[1]) // Second paragraph: 'more data'
+
+  })
 });
