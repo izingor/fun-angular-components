@@ -3,7 +3,7 @@ import { TestExampleComponent } from "./test-example.component";
 import { TestExampleService } from "../example-service/test-example.service";
 import { provideHttpClient } from "@angular/common/http";
 import { provideHttpClientTesting } from "@angular/common/http/testing";
-import { of, throwError, delay } from "rxjs";
+import { of, throwError, delay, Observable, Subject } from "rxjs";
 
 describe('TestExampleComponent', () => {
   // Test variables that will be used across all test cases
@@ -435,5 +435,66 @@ describe('TestExampleComponent', () => {
     expect(service.getBaconText).toHaveBeenCalled() // Method was called
     expect(service.getBaconText).toHaveBeenCalledWith() // Called with no parameters
     expect(service.getBaconText).toHaveBeenCalledTimes(1) // Called exactly once
+  })
+
+  // Test 21: Loading State Transition During Async Request
+  // This test specifically checks the loading state changes throughout the async operation lifecycle
+  it('Should transition loading state correctly: false -> true -> false during async request', () => {
+    // Arrange: Create a Subject to manually control when the observable emits
+    // Subject allows us to control exactly when the observable emits values
+    const dataSubject = new Subject<string[]>()
+    const mockData = ['Async test data']
+    
+    // Configure service to return our controlled Subject as Observable
+    service.getBaconText.and.returnValue(dataSubject.asObservable())
+
+    // Assert: Initial state - should not be loading
+    expect(component.isLoading()).toBe(false)
+    expect(component.baconText()).toEqual([])
+
+    // Act: Start the async request
+    component.loadBaconText()
+
+    // Assert: During request - should be loading
+    expect(component.isLoading()).toBe(true) // Loading state is now true
+    expect(component.baconText()).toEqual([]) // Data still empty during loading
+    expect(service.getBaconText).toHaveBeenCalled() // Service was called
+
+    // Act: Complete the async request by emitting data
+    dataSubject.next(mockData)
+    dataSubject.complete()
+
+    // Assert: After request completion - should not be loading anymore
+    expect(component.isLoading()).toBe(false) // Loading state back to false
+    expect(component.baconText()).toEqual(mockData) // Data has been populated
+  })
+
+  // Test 22: Loading State Transition With Error
+  // This test checks loading state transitions when the async request fails
+  it('Should reset loading state to false even when async request fails', () => {
+    // Arrange: Create a Subject that will emit an error
+    const errorSubject = new Subject<string[]>()
+    const errorMessage = 'Network failure'
+    
+    // Configure service to return our controlled Subject
+    service.getBaconText.and.returnValue(errorSubject.asObservable())
+
+    // Assert: Initial state
+    expect(component.isLoading()).toBe(false)
+    expect(component.baconText()).toEqual([])
+
+    // Act: Start the async request
+    component.loadBaconText()
+
+    // Assert: During request - should be loading
+    expect(component.isLoading()).toBe(true)
+    expect(component.baconText()).toEqual([]) // Data still empty
+
+    // Act: Trigger an error
+    errorSubject.error(new Error(errorMessage))
+
+    // Assert: After error - loading should be false, data should be empty
+    expect(component.isLoading()).toBe(false) // Loading state reset to false
+    expect(component.baconText()).toEqual([]) // Data reset to empty array
   })
 });
